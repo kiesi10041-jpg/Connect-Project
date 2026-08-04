@@ -51,10 +51,14 @@
         .worker-box label { font-size: 0.8rem; font-weight: bold; color: #0369a1; white-space: nowrap; }
         .worker-box input { padding: 5px 8px; font-size: 0.82rem; width: 110px; border: 1px solid #7dd3fc; }
 
-        .btn { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.2s; }
+        .btn-action-group { display: flex; gap: 8px; }
+        .btn { padding: 9px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.2s; }
         .btn-success { background: var(--status-done); color: white; }
+        .btn-print { background: #0f172a; color: white; }
         .btn-secondary { background: #475569; color: white; }
+        
         .btn-item-save { background: var(--secondary-color); color: white; padding: 10px 16px; font-weight: bold; font-size: 0.85rem; border: none; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 12px; }
+        .btn-item-save:hover { background: #003d80; }
 
         /* Tabs */
         .tabs { display: flex; gap: 6px; margin-bottom: 15px; }
@@ -112,13 +116,18 @@
         .card-detail { display: none; padding: 15px; background: #f8fafc; border-top: 1px solid var(--border-color); }
         .card-detail.open { display: block; }
 
-        .map-link { display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #ffffff; text-decoration: none; font-weight: bold; font-size: 0.9rem; background: #03cf5d; padding: 10px 16px; border-radius: 8px; width: 100%; transition: background 0.2s; }
-        .map-link:hover { background: #02b34a; }
+        /* 소형 네이버 길찾기 링크 */
+        .map-link-inline { display: inline-flex; align-items: center; gap: 3px; color: #15803d; text-decoration: none; font-weight: bold; font-size: 0.78rem; background: #dcfce7; padding: 2px 8px; border-radius: 4px; border: 1px solid #bbf7d0; margin-left: 6px; }
+        .map-link-inline:hover { background: #bbf7d0; }
 
         .docs-input-box { background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 10px; }
         .docs-input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
         .docs-input-header label { font-size: 0.8rem; font-weight: bold; color: var(--primary-color); }
         .docs-status-select { font-size: 0.78rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+
+        /* 기업 특성 / 성향 박스 */
+        .traits-input-box { background: #fffbebf8; padding: 12px; border-radius: 8px; border: 1px solid #fef3c7; margin-top: 10px; }
+        .traits-input-box label { font-size: 0.8rem; font-weight: bold; color: #b45309; display: block; margin-bottom: 4px; }
 
         .round-container { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
         .round-box { background: white; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; }
@@ -142,27 +151,129 @@
         .modal-popup-header h2 { font-size: 1.3rem; color: var(--primary-color); font-weight: 800; }
         .modal-status-badge { padding: 4px 12px; border-radius: 20px; color: white; font-weight: bold; font-size: 0.82rem; }
 
-        .modal-topic-card { background: #f0f9ff; border-left: 4px solid var(--secondary-color); padding: 14px; border-radius: 0 8px 8px 0; margin-bottom: 16px; }
-        .modal-topic-title { font-size: 0.78rem; font-weight: 800; color: var(--secondary-color); text-transform: uppercase; letter-spacing: 0.5px; }
+        .modal-topic-card { background: #f0f9ff; border-left: 4px solid var(--secondary-color); padding: 14px; border-radius: 0 8px 8px 0; margin-bottom: 14px; }
+        .modal-topic-title { font-size: 0.78rem; font-weight: 800; color: var(--secondary-color); text-transform: uppercase; }
         .modal-topic-body { font-size: 1.0rem; font-weight: 700; color: #0f172a; margin-top: 4px; line-height: 1.4; }
 
-        .modal-history-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 16px; }
+        .modal-traits-card { background: #fffbebf8; border-left: 4px solid #f59e0b; padding: 12px; border-radius: 0 8px 8px 0; margin-bottom: 14px; font-size: 0.88rem; color: #78350f; }
+
+        .modal-history-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
         .modal-section-title { font-size: 0.82rem; font-weight: 800; color: var(--primary-color); margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
         
         .history-timeline { display: flex; flex-direction: column; gap: 8px; }
         .history-step-item { background: white; padding: 10px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.85rem; }
         .history-step-item.active { border-color: var(--secondary-color); background: #f0f7ff; }
 
-        .modal-contact-card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 16px; }
-        .contact-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.92rem; }
+        .modal-contact-card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+        .contact-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.92rem; }
         .contact-phone-btn { display: inline-flex; align-items: center; gap: 4px; color: var(--secondary-color); text-decoration: none; font-weight: bold; background: #e0f2fe; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; }
 
-        /* 히스토리 삭제/복원 리스트 디자인 */
         .history-list { max-height: 280px; overflow-y: auto; margin-top: 12px; border: 1px solid var(--border-color); border-radius: 8px; }
         .history-item { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; gap: 8px; }
-        .history-item:last-child { border-bottom: none; }
-        .history-btns { display: flex; gap: 4px; flex-shrink: 0; }
-        .btn-del-hist { background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.72rem; font-weight: bold; }
+
+        /* --- 🜂 A4 인쇄 전용 스타일 (@media print) --- */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 12mm 15mm;
+            }
+            body {
+                background: white;
+                color: black;
+                padding: 0;
+                font-size: 10pt;
+            }
+            header, .admin-bar, .controls, .tabs, .calendar-container, .modal-overlay, .toggle-btn, .btn-item-save, .map-link-inline {
+                display: none !important;
+            }
+            .container {
+                max-width: 100%;
+                margin: 0;
+            }
+            .tab-content {
+                display: block !important;
+            }
+            .company-cards-list {
+                gap: 0;
+            }
+            
+            /* 인쇄용 공문서/보고서 형태 레이아웃 */
+            .accordion-card {
+                border: none;
+                border-bottom: 2px solid #000;
+                border-radius: 0;
+                page-break-inside: avoid;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+            }
+            .card-summary {
+                padding: 0 0 10px 0;
+                border-bottom: 1px solid #333;
+            }
+            .company-num { color: #000; font-size: 12pt; }
+            .company-name-box h3 { font-size: 14pt; color: #000; }
+            .company-info-text { font-size: 10pt; color: #222; }
+            
+            .card-detail {
+                display: block !important;
+                background: white;
+                padding: 10px 0 0 0;
+                border: none;
+            }
+            .docs-input-box, .traits-input-box {
+                background: #f8fafc;
+                border: 1px solid #ccc;
+                padding: 8px;
+                margin-top: 8px;
+                font-size: 9pt;
+            }
+            .round-container {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin-top: 10px;
+            }
+            .round-box {
+                border: 1px solid #666 !important;
+                border-top: 2px solid #000 !important;
+                padding: 8px;
+                background: white;
+            }
+            .round-box h4 {
+                font-size: 10pt;
+                color: black;
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 4px;
+            }
+            input, select, textarea {
+                border: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                font-size: 9pt !important;
+                color: black !important;
+                appearance: none;
+            }
+            textarea {
+                min-height: auto !important;
+            }
+            .print-report-header {
+                display: block !important;
+                text-align: center;
+                border-bottom: 2px solid #000;
+                padding-bottom: 12px;
+                margin-bottom: 20px;
+            }
+            .print-report-header h1 {
+                font-size: 18pt;
+                color: #000;
+            }
+            .print-report-header p {
+                font-size: 10pt;
+                color: #555;
+            }
+        }
+
+        .print-report-header { display: none; }
 
         /* Media Queries */
         @media (max-width: 768px) {
@@ -180,13 +291,18 @@
             .search-filter { width: auto; }
             .btn { width: auto; }
             .round-container { grid-template-columns: 1fr 1fr; display: grid; }
-            .map-link { width: auto; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- 인쇄 전용 공문서 헤더 -->
+    <div class="print-report-header">
+        <h1>순천시 청년 소상공인 초기성장 프로젝트 - 점포별 컨설팅 현황 보고서</h1>
+        <p>발행일시: <span id="printDate">2026. 08. 04</span> | 총 10개 참여기업 관리 현황</p>
+    </div>
+
     <!-- Header -->
     <header>
         <div class="header-title-box" onclick="handleHeaderClick()">
@@ -222,7 +338,7 @@
         </div>
     </div>
 
-    <!-- Controls & Worker Name -->
+    <!-- Controls -->
     <div class="controls">
         <div class="search-filter">
             <input type="text" id="searchInput" placeholder="업소명 / 대표자 검색..." onkeyup="filterData()">
@@ -240,7 +356,8 @@
             <input type="text" id="currentWorkerName" placeholder="작업자 성함" value="담당자" onchange="saveWorkerName()">
         </div>
 
-        <div>
+        <div class="btn-action-group">
+            <button class="btn btn-print" onclick="window.print()">🜂 현황 보고서 인쇄 (A4)</button>
             <button class="btn btn-success" onclick="saveAllData()">💾 전체 저장하기</button>
         </div>
     </div>
@@ -297,7 +414,7 @@
     </div>
 </div>
 
-<!-- History Modal (개별 삭제 / 전체 비우기 버튼 반영) -->
+<!-- History Modal -->
 <div class="modal-overlay" id="historyModal">
     <div class="modal-card">
         <span class="modal-close" onclick="closeModal('historyModal')">&times;</span>
@@ -321,21 +438,22 @@
         "2026-10-09": "한글날", "2026-12-25": "성탄절"
     };
 
+    // 기업 특성/성향 항목(traits)이 추가된 데이터 구조
     const initialCompanies = [
-        { id: 1, name: "만대재", owner: "장민영", phone: "010-4924-1573", address: "전남 순천시 순천만길 530, 1층", category: "디자인", docStatus: "미수집", docMemo: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 2, name: "스테잇", owner: "백민경", phone: "010-9243-6558", address: "전남 순천시 왕지3길 18-28", category: "마케팅", docStatus: "미수집", docMemo: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 3, name: "동동베이킹랩", owner: "최동문", phone: "010-3104-0215", address: "전남 순천시 장명로 13, 다동 1층", category: "복합", docStatus: "미수집", docMemo: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 4, name: "촌스랩", owner: "오태민", phone: "010-5842-0277", address: "전남 순천시 중앙로 255, F1동 4층", category: "지원사업", docStatus: "미수집", docMemo: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 5, name: "고소롱", owner: "장진수", phone: "010-2716-5614", address: "전남 순천시 연향1로 40, 상가동 108호", category: "디자인", docStatus: "미수집", docMemo: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 6, name: "노무사사무소 미르", owner: "조수린", phone: "010-2753-1858", address: "전남 순천시 해룡면 지봉로 277, 1층", category: "지원사업", docStatus: "미수집", docMemo: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 7, name: "멜리본", owner: "서성호", phone: "010-4446-0064", address: "전남 순천시 팔마3길 38", category: "마케팅", docStatus: "미수집", docMemo: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 8, name: "세허니", owner: "권현정", phone: "010-8502-5508", address: "전남 순천시 덕월길 112", category: "복합", docStatus: "미수집", docMemo: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 9, name: "곡물공간", owner: "정세헌", phone: "010-7733-9220", address: "전남 순천시 저전길 18, 2층", category: "디자인", docStatus: "미수집", docMemo: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 10, name: "뉘즈", owner: "김수은", phone: "010-9208-3713", address: "전남 순천시 역전길 34, 2층 19호", category: "마케팅", docStatus: "미수집", docMemo: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" }
+        { id: 1, name: "만대재", owner: "장민영", phone: "010-4924-1573", address: "전남 순천시 순천만길 530, 1층", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 2, name: "스테잇", owner: "백민경", phone: "010-9243-6558", address: "전남 순천시 왕지3길 18-28", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 3, name: "동동베이킹랩", owner: "최동문", phone: "010-3104-0215", address: "전남 순천시 장명로 13, 다동 1층", category: "복합", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 4, name: "촌스랩", owner: "오태민", phone: "010-5842-0277", address: "전남 순천시 중앙로 255, F1동 4층", category: "지원사업", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 5, name: "고소롱", owner: "장진수", phone: "010-2716-5614", address: "전남 순천시 연향1로 40, 상가동 108호", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 6, name: "노무사사무소 미르", owner: "조수린", phone: "010-2753-1858", address: "전남 순천시 해룡면 지봉로 277, 1층", category: "지원사업", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 7, name: "멜리본", owner: "서성호", phone: "010-4446-0064", address: "전남 순천시 팔마3길 38", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 8, name: "세허니", owner: "권현정", phone: "010-8502-5508", address: "전남 순천시 덕월길 112", category: "복합", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 9, name: "곡물공간", owner: "정세헌", phone: "010-7733-9220", address: "전남 순천시 저전길 18, 2층", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 10, name: "뉘즈", owner: "김수은", phone: "010-9208-3713", address: "전남 순천시 역전길 34, 2층 19호", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" }
     ];
 
-    let companies = JSON.parse(localStorage.getItem('suncheon_consulting_v12')) || initialCompanies;
-    let historyStack = JSON.parse(localStorage.getItem('suncheon_history_stack_v12')) || [];
+    let companies = JSON.parse(localStorage.getItem('suncheon_consulting_v13')) || initialCompanies;
+    let historyStack = JSON.parse(localStorage.getItem('suncheon_history_stack_v13')) || [];
     let currentWorker = localStorage.getItem('suncheon_worker_name') || '담당자';
     let currentDate = new Date(2026, 7, 1);
 
@@ -345,6 +463,7 @@
 
     function init() {
         document.getElementById('currentWorkerName').value = currentWorker;
+        document.getElementById('printDate').innerText = new Date().toLocaleDateString('ko-KR');
         renderCards();
         updateStats();
         renderCalendar();
@@ -383,7 +502,6 @@
         document.getElementById('adminBar').style.display = 'none';
     }
 
-    /* 최대 30개 자동 관리 스냅샷 */
     function pushHistory(description) {
         saveWorkerName();
         const snapshot = {
@@ -394,8 +512,8 @@
             data: JSON.parse(JSON.stringify(companies))
         };
         historyStack.unshift(snapshot);
-        if (historyStack.length > 30) historyStack.pop(); // 30개 초과 시 자동 삭제
-        localStorage.setItem('suncheon_history_stack_v12', JSON.stringify(historyStack));
+        if (historyStack.length > 30) historyStack.pop();
+        localStorage.setItem('suncheon_history_stack_v13', JSON.stringify(historyStack));
     }
 
     function renderCards() {
@@ -408,6 +526,7 @@
             
             const docStatus = item.docStatus || '미수집';
             const docMemo = item.docMemo || '';
+            const traits = item.traits || '';
 
             const card = document.createElement('div');
             card.className = 'accordion-card';
@@ -429,8 +548,13 @@
                 </div>
 
                 <div class="card-detail" id="cardDetail-${index}">
-                    <div style="font-size:0.82rem; color:#475569; margin-bottom:6px;">📍 ${item.address}</div>
+                    <!-- 주소 옆 소형 길찾기 링크 배치 -->
+                    <div style="font-size:0.85rem; color:#334155; margin-bottom:8px; display:flex; align-items:center; flex-wrap:wrap;">
+                        📍 <strong>주소:</strong> &nbsp;${item.address}
+                        <a href="${naverMapUrl}" target="_blank" class="map-link-inline">📍 네이버 지도 길찾기</a>
+                    </div>
                     
+                    <!-- 기초자료 수집 현황 -->
                     <div class="docs-input-box">
                         <div class="docs-input-header">
                             <label>📁 기초자료 수집 현황 및 메모</label>
@@ -441,6 +565,12 @@
                             </select>
                         </div>
                         <input type="text" id="field-docMemo-${index}" placeholder="예: 사진, 로고 완료 / 기존 홍보물 대기중..." value="${docMemo}" style="width:100%; font-size:0.85rem; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
+                    </div>
+
+                    <!-- 💡 기업 특성 / 성향 사전 메모 박스 -->
+                    <div class="traits-input-box">
+                        <label>💡 기업 특성 및 사전 참고사항 (성향/주력제품/유의사항)</label>
+                        <input type="text" id="field-traits-${index}" placeholder="예: 대표님 소통 스타일, 주력 디저트 라인업, 브랜드 리뉴얼 니즈 강함 등..." value="${traits}" style="width:100%; font-size:0.85rem; padding:8px; border:1px solid #fcd34d; border-radius:6px; background:#ffffff;">
                     </div>
 
                     <div class="round-container">
@@ -501,7 +631,6 @@
                         </div>
                     </div>
 
-                    <a href="${naverMapUrl}" target="_blank" class="map-link" style="margin-top:12px;">📍 네이버 지도로 길찾기 실행</a>
                     <button class="btn-item-save" onclick="saveItemData(${index})">💾 [${item.name}] 수정사항 저장하기</button>
                 </div>
             `;
@@ -514,6 +643,7 @@
 
         companies[index].docStatus = document.getElementById(`field-docStatus-${index}`).value;
         companies[index].docMemo = document.getElementById(`field-docMemo-${index}`).value;
+        companies[index].traits = document.getElementById(`field-traits-${index}`).value;
 
         companies[index].r1Status = document.getElementById(`field-r1Status-${index}`).value;
         companies[index].r1Date = document.getElementById(`field-r1Date-${index}`).value;
@@ -562,7 +692,7 @@
     }
 
     function autoSave() {
-        localStorage.setItem('suncheon_consulting_v12', JSON.stringify(companies));
+        localStorage.setItem('suncheon_consulting_v13', JSON.stringify(companies));
     }
 
     function saveAllData() {
@@ -572,6 +702,7 @@
             if(docS) {
                 companies[index].docStatus = docS.value;
                 companies[index].docMemo = document.getElementById(`field-docMemo-${index}`).value;
+                companies[index].traits = document.getElementById(`field-traits-${index}`).value;
                 companies[index].r1Status = document.getElementById(`field-r1Status-${index}`).value;
                 companies[index].r1Date = document.getElementById(`field-r1Date-${index}`).value;
                 companies[index].r1Manager1 = document.getElementById(`field-r1Manager1-${index}`).value;
@@ -745,6 +876,7 @@
         if (comp) openModal(comp, round);
     }
 
+    /* 시인성 전면 개선 모달 팝업 */
     function openModal(comp, currentRound) {
         const modal = document.getElementById('infoModal');
 
@@ -769,6 +901,7 @@
                 <span class="modal-status-badge" style="background:${statusBg};">${status}</span>
             </div>
 
+            <!-- 핵심 컨설팅 수행 주제 -->
             <div class="modal-topic-card">
                 <div class="modal-topic-title">📌 이번 회차 컨설팅 수행 주제 & 과제</div>
                 <div class="modal-topic-body">${content || '등록된 수행 내용이 없습니다.'}</div>
@@ -777,6 +910,14 @@
                 </div>
             </div>
 
+            <!-- 기업 특성 및 사전 참고사항 카드가 있을 경우 표출 -->
+            ${comp.traits ? `
+            <div class="modal-traits-card">
+                <strong>💡 기업 특성 및 사전 참고사항:</strong><br>
+                ${comp.traits}
+            </div>` : ''}
+
+            <!-- 1회차 ↔ 2회차 연계 히스토리 -->
             <div class="modal-history-section">
                 <div class="modal-section-title">🔄 1회차 ↔ 2회차 연계 컨설팅 히스토리</div>
                 <div class="history-timeline">
@@ -791,23 +932,22 @@
                 </div>
             </div>
 
+            <!-- 대표자, 연락처, 주소 & 길찾기 소형 액션 -->
             <div class="modal-contact-card">
                 <div class="contact-row">
                     <span><strong>대표자:</strong> ${comp.owner}</span>
                     <a href="tel:${comp.phone}" class="contact-phone-btn">📞 ${comp.phone} 전화걸기</a>
                 </div>
-                <div style="font-size:0.88rem; color:#334155; margin-top:6px;">
-                    <strong>주소:</strong> ${comp.address}
+                <div style="font-size:0.88rem; color:#334155; margin-top:6px; display:flex; align-items:center; justify-content:space-between;">
+                    <span><strong>주소:</strong> ${comp.address}</span>
+                    <a href="${naverMapUrl}" target="_blank" class="map-link-inline">📍 길찾기</a>
                 </div>
             </div>
-
-            <a href="${naverMapUrl}" target="_blank" class="map-link">📍 네이버 지도로 길찾기 실행</a>
         `;
 
         modal.style.display = 'flex';
     }
 
-    /* 히스토리 개별 삭제 및 전체 비우기 기능 */
     function openHistoryModal() {
         const modal = document.getElementById('historyModal');
         const container = document.getElementById('historyListContainer');
@@ -839,7 +979,7 @@
     function deleteHistoryItem(idx) {
         if (confirm("이 히스토리 항목을 삭제하시겠습니까?")) {
             historyStack.splice(idx, 1);
-            localStorage.setItem('suncheon_history_stack_v12', JSON.stringify(historyStack));
+            localStorage.setItem('suncheon_history_stack_v13', JSON.stringify(historyStack));
             openHistoryModal();
         }
     }
@@ -847,7 +987,7 @@
     function clearAllHistory() {
         if (confirm("모든 히스토리 내역을 비우시겠습니까? (이 작업은 되돌릴 수 없습니다.)")) {
             historyStack = [];
-            localStorage.setItem('suncheon_history_stack_v12', JSON.stringify(historyStack));
+            localStorage.setItem('suncheon_history_stack_v13', JSON.stringify(historyStack));
             openHistoryModal();
         }
     }
