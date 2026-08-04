@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>순천시 청년 소상공인 초기성장 프로젝트 - 컨설팅 일정 스케줄러</title>
+    <style>
+        :root {
+            --primary-color: #0f2c59;
+            --secondary-color: #0056b3;
+            --accent-color: #00b4d8;
+            --holiday-color: #d90429;   /* 일요일/공휴일 빨간색 */
+            --saturday-color: #0056b3;  /* 토요일 파란색 */
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #e0e6ed;
+            --text-color: #333333;
+            --status-hold: #6c757d;      /* 보류 */
+            --status-progress: #d97706;  /* 진행중 */
+            --status-done: #28a745;      /* 완료 */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.5; padding: 20px; }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* Header */
+        header { background: var(--primary-color); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        header h1 { font-size: 1.5rem; font-weight: 700; }
+        header p { font-size: 0.9rem; opacity: 0.8; }
+
+        .stats-container { display: flex; gap: 12px; flex-wrap: wrap; }
+        .stat-card { background: rgba(255, 255, 255, 0.1); padding: 8px 16px; border-radius: 8px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); }
+        .stat-card .num { font-size: 1.2rem; font-weight: bold; color: var(--accent-color); }
+        .stat-card .label { font-size: 0.75rem; opacity: 0.9; }
+
+        /* Controls */
+        .controls { background: var(--card-bg); padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border: 1px solid var(--border-color); }
+        .search-filter { display: flex; gap: 10px; flex-wrap: wrap; }
+        input[type="text"], select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; outline: none; }
+
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.2s; }
+        .btn-success { background: var(--status-done); color: white; }
+        .btn-success:hover { background: #218838; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--text-color); }
+        .tab-btn.active { background: var(--secondary-color); color: white; border-color: var(--secondary-color); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Calendar View Style */
+        .calendar-container { background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+        
+        .calendar-day-header { text-align: center; font-weight: bold; padding: 10px; background: #f1f5f9; border-radius: 6px; color: var(--primary-color); }
+        .calendar-day-header.sun { color: var(--holiday-color); }
+        .calendar-day-header.sat { color: var(--saturday-color); }
+
+        .calendar-day { min-height: 120px; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px; background: #fafafa; }
+        .calendar-day .date-num { font-weight: bold; font-size: 0.88rem; margin-bottom: 6px; }
+        .calendar-day.sun .date-num { color: var(--holiday-color); }
+        .calendar-day.sat .date-num { color: var(--saturday-color); }
+        .calendar-day.holiday .date-num { color: var(--holiday-color); }
+        .holiday-label { font-size: 0.7rem; font-weight: normal; margin-left: 2px; }
+
+        /* Calendar Card */
+        .event-card { background: #ffffff; border-left: 4px solid var(--status-hold); padding: 6px; margin-bottom: 6px; border-radius: 4px; font-size: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; }
+        .event-card:hover { transform: translateY(-2px); }
+        .event-card.status-진행 { border-left-color: var(--status-progress); background: #fffdf5; }
+        .event-card.status-완료 { border-left-color: var(--status-done); background: #f4fbf7; }
+        .event-card .time { font-weight: bold; color: var(--primary-color); }
+        .event-card .company { font-weight: bold; font-size: 0.8rem; }
+        .event-card .status-tag { display: inline-block; padding: 1px 4px; border-radius: 3px; font-size: 0.68rem; color: white; font-weight: bold; float: right; }
+        .tag-보류 { background: var(--status-hold); }
+        .tag-진행 { background: var(--status-progress); }
+        .tag-완료 { background: var(--status-done); }
+
+        /* 업소별 카드 / 히스토리 관리 뷰 */
+        .company-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(620px, 1fr)); gap: 20px; }
+        .company-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .company-card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #f0f4f8; padding-bottom: 12px; margin-bottom: 15px; }
+        .company-title { font-size: 1.25rem; font-weight: bold; color: var(--primary-color); }
+        .map-link { display: inline-flex; align-items: center; gap: 4px; color: #00c73c; text-decoration: none; font-weight: 600; font-size: 0.8rem; background: #f0fdf4; padding: 3px 8px; border-radius: 4px; border: 1px solid #bbf7d0; margin-top: 4px; }
+
+        .round-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .round-box { background: white; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1; }
+        .round-box h4 { font-size: 0.92rem; color: var(--primary-color); margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+
+        .form-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+        .form-group label { font-size: 0.78rem; font-weight: bold; color: #555; }
+        .form-group input, .form-group select, .form-group textarea { font-size: 0.82rem; padding: 5px 8px; border: 1px solid var(--border-color); border-radius: 4px; width: 100%; }
+        .form-group textarea { resize: vertical; min-height: 60px; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-card { background: white; width: 90%; max-width: 550px; border-radius: 10px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #999; }
+        .modal-header { border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 15px; }
+        .modal-header h3 { color: var(--primary-color); font-size: 1.3rem; }
+        .modal-body p { margin-bottom: 8px; font-size: 0.9rem; color: #444; }
+
+        @media (max-width: 768px) {
+            .company-cards-grid { grid-template-columns: 1fr; }
+            .round-container { grid-template-columns: 1fr; }
+            .calendar-grid { grid-template-columns: repeat(1, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <header>
+        <div>
+            <h1>순천시 청년 소상공인 초기성장 프로젝트</h1>
+            <p>디자인 & 마케팅 공동 컨설팅 일정 및 히스토리 스케줄러</p>
+        </div>
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="num" id="stat-total">10</div>
+                <div class="label">전체 점포</div>
+            </div>
+            <div class="stat-card">
+                <div class="num" id="stat-collected">0 / 10</div>
+                <div class="label">기초자료 수집</div>
+            </div>
+            <div class="stat-card">
+                <div class="num" id="stat-r1-done">0</div>
+                <div class="label">1회차 완료</div>
+            </div>
+            <div class="stat-card">
+                <div class="num" id="stat-r2-done">0</div>
+                <div class="label">2회차 완료</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Controls -->
+    <div class="controls">
+        <div class="search-filter">
+            <input type="text" id="searchInput" placeholder="업소명 / 대표자 검색..." onkeyup="filterData()">
+            <select id="categoryFilter" onchange="filterData()">
+                <option value="">전체 분야</option>
+                <option value="디자인">디자인</option>
+                <option value="마케팅">마케팅</option>
+                <option value="복합">복합</option>
+                <option value="지원사업">지원사업</option>
+            </select>
+        </div>
+        <div>
+            <button class="btn btn-success" onclick="saveData()">💾 설정값 저장하기</button>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('calendar-view', this)">📅 월간 달력 스케줄러</button>
+        <button class="tab-btn" onclick="switchTab('cards-view', this)">📋 업소별 상세 관리 및 히스토리</button>
+    </div>
+
+    <!-- Tab 1: Calendar View -->
+    <div id="calendar-view" class="tab-content active">
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <button class="btn" style="border:1px solid #ccc" onclick="changeMonth(-1)">◀ 이전달</button>
+                <h2 id="calendarTitle">2026년 8월</h2>
+                <button class="btn" style="border:1px solid #ccc" onclick="changeMonth(1)">다음달 ▶</button>
+            </div>
+            <div class="calendar-grid">
+                <div class="calendar-day-header sun">일</div>
+                <div class="calendar-day-header">월</div>
+                <div class="calendar-day-header">화</div>
+                <div class="calendar-day-header">수</div>
+                <div class="calendar-day-header">목</div>
+                <div class="calendar-day-header">금</div>
+                <div class="calendar-day-header sat">토</div>
+            </div>
+            <div class="calendar-grid" id="calendarDays">
+                <!-- JS Calendar Rendering -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: 업소별 상세 히스토리 및 일정 관리 -->
+    <div id="cards-view" class="tab-content">
+        <div class="company-cards-grid" id="companyCardsContainer">
+            <!-- JS Company Cards Rendering -->
+        </div>
+    </div>
+</div>
+
+<!-- 상세 팝업 모달 -->
+<div class="modal-overlay" id="infoModal">
+    <div class="modal-card">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <div class="modal-header">
+            <h3 id="modalCompanyName">업소명</h3>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Dynamic Content -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // 한국 공휴일 지정 (2026년 기준 주요 공휴일 및 대체/임시 공휴일)
+    const koreanHolidays = {
+        "2026-01-01": "신정",
+        "2026-02-16": "설날 연휴",
+        "2026-02-17": "설날",
+        "2026-02-18": "설날 연휴",
+        "2026-03-01": "삼일절",
+        "2026-03-02": "대체공휴일",
+        "2026-05-05": "어린이날",
+        "2026-05-24": "부처님오신날",
+        "2026-05-25": "대체공휴일",
+        "2026-06-06": "현충일",
+        "2026-08-15": "광복절",
+        "2026-08-17": "대체공휴일",
+        "2026-09-24": "추석 연휴",
+        "2026-09-25": "추석",
+        "2026-09-26": "추석 연휴",
+        "2026-10-03": "개천절",
+        "2026-10-09": "한글날",
+        "2026-12-25": "성탄절"
+    };
+
+    // Initial 10 Companies
+    const initialCompanies = [
+        { id: 1, name: "만대재", owner: "장민영", phone: "010-4924-1573", address: "전남 순천시 순천만길 530, 1층", category: "디자인", collected: false, collectDate: "", r1Date: "", r1Manager: "", r1Content: "", r1Status: "보류", r2Date: "", r2Manager: "", r2Content: "", r2Status: "보류" },
+        { id: 2, name: "스테잇", owner: "백민경", phone: "010-9243-6558", address: "전남 순천시 왕지3길 18-28", category: "마케팅", collected: false, collectDate: "", r1Date: "", r1Manager: "", r1Content: "", r1Status: "보류", r2Date: "", r2Manager: "", r2Content: "", r2Status: "보류" },
+        { id: 3, name: "동동베이킹랩", owner: "최동문", phone: "010-3104-0215", address: "전남 순천시 장명로 13, 다동 1층", category: "복합", collected: false, collectDate: "", r1Date: "", r1Manager: "", r1Content: "", r1Status: "보류", r2Date: "", r2Manager: "", r2Content: "", r2Status: "보류" },
+        { id: 4, name: "촌스랩", owner: "오태민", phone: "010-5842-0277", address: "전남 순천시 중앙로 255, F1동 4층", category: "지원사업", collected: false, collectDate: "", r1Date: "", r1Manager: "", r1Content: "", r1Status: "보류", r2Date: "", r2Manager: "", r2Content: "", r2Status: "보류" },
+        { id: 5, name: "고소롱", owner: "장진수", phone: "010-2716-5614", address: "전남 순천시 연향1로 40, 상가동 108호", category: "디자인", collected: false, collectDate: "", r1Date: "", r1Manager: "", r1Content: "", r1Status: "보류", r2Date: "", r2Manager: "", r2Content: "", r2Status: "보류" },
+        { id: 6, name: "노무사사무소 미르", owner: "조수린", phone: "010-2753-1858", address: "전남 순천시 해룡면 지봉로 277, 1층", category: "지원사업", collected: false, collectDate: "", r1Date: "", r1Manager: "", r1Content: "", r1Status: "보류", r2Date: "", r2Manager: "", r2Content: "", r2Status: "보류" },
+        { id: 7, name: "멜리본", owner: "서성호", phone: "010-4446-0064", address: "전남 순천시 팔마3길 38", category: "마케팅", collected: false, collectDate: "", r1Date: "", r1Manager: "", r1Content: "", r1Status: "보류", r2Date: "", r2Manager: "", r2Content: "", r2Status: "보류" },
+        { id: 8, name: "세허니", owner: "권현정", phone: "010-8502-5508", address: "전남 순천시 덕월길 112", category: "복합", collected: false, collectDate: "", r1Date: "", r1Manager: "", r1Content: "", r1Status: "보류", r2Date: "", r2Manager: "", r2Content: "", r2Status: "보류" },
+        { id: 9, name: "곡물공간", owner: "정세헌", phone: "010-7733-9220", address: "전남 순천시 저전길 18, 2층", category: "디자인", collected: false, collectDate: "", r1Date: "", r1Manager: "", r1Content: "", r1Status: "보류", r2Date: "", r2Manager: "", r2Content: "", r2Status: "보류" },
+        { id: 10, name: "뉘즈", owner: "김수은", phone: "010-9208-3713", address: "전남 순천시 역전길 34, 2층 19호", category: "마케팅", collected: false, collectDate: "", r1Date: "", r1Manager: "", r1Content: "", r1Status: "보류", r2Date: "", r2Manager: "", r2Content: "", r2Status: "보류" }
+    ];
+
+    let companies = JSON.parse(localStorage.getItem('suncheon_consulting_v3')) || initialCompanies;
+    let currentDate = new Date(2026, 7, 1); // 2026년 8월
+
+    function init() {
+        renderCards();
+        updateStats();
+        renderCalendar();
+    }
+
+    /* 업소별 카드 / 히스토리 관리 렌더링 */
+    function renderCards() {
+        const container = document.getElementById('companyCardsContainer');
+        container.innerHTML = '';
+
+        companies.forEach((item, index) => {
+            const encodedAddr = encodeURIComponent(item.address);
+            const naverMapUrl = `https://m.map.naver.com/search2/search.naver?query=${encodedAddr}`;
+
+            const card = document.createElement('div');
+            card.className = 'company-card';
+            card.innerHTML = `
+                <div class="company-card-header">
+                    <div>
+                        <div class="company-title">${item.id}. ${item.name}</div>
+                        <div style="font-size:0.85rem; color:#555; margin-top:2px;">
+                            ${item.owner} (${item.phone}) | ${item.address}
+                        </div>
+                        <a href="${naverMapUrl}" target="_blank" class="map-link">📍 네이버 지도로 길찾기</a>
+                    </div>
+                    <div style="text-align:right;">
+                        <select onchange="updateItem(${index}, 'category', this.value)" style="margin-bottom:6px; font-weight:bold;">
+                            <option value="디자인" ${item.category === '디자인' ? 'selected' : ''}>분야: 디자인</option>
+                            <option value="마케팅" ${item.category === '마케팅' ? 'selected' : ''}>분야: 마케팅</option>
+                            <option value="복합" ${item.category === '복합' ? 'selected' : ''}>분야: 복합</option>
+                            <option value="지원사업" ${item.category === '지원사업' ? 'selected' : ''}>분야: 지원사업</option>
+                        </select><br>
+                        <label style="font-size:0.8rem; font-weight:bold;">
+                            <input type="checkbox" ${item.collected ? 'checked' : ''} onchange="updateItem(${index}, 'collected', this.checked)"> 자료수집 완료
+                        </label>
+                    </div>
+                </div>
+
+                <div class="round-container">
+                    <!-- 1회차 컨설팅 -->
+                    <div class="round-box">
+                        <h4>
+                            <span>1회차 컨설팅</span>
+                            <select onchange="updateItem(${index}, 'r1Status', this.value)" style="font-weight:bold; color:${getStatusColor(item.r1Status)}">
+                                <option value="보류" ${item.r1Status === '보류' ? 'selected' : ''}>보류</option>
+                                <option value="진행" ${item.r1Status === '진행' ? 'selected' : ''}>진행중</option>
+                                <option value="완료" ${item.r1Status === '완료' ? 'selected' : ''}>완료</option>
+                            </select>
+                        </h4>
+                        <div class="form-group">
+                            <label>컨설팅 일시</label>
+                            <input type="datetime-local" value="${item.r1Date}" onchange="updateItem(${index}, 'r1Date', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>담당 컨설턴트</label>
+                            <input type="text" placeholder="담당자 이름" value="${item.r1Manager}" onchange="updateItem(${index}, 'r1Manager', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>1회차 진단 및 수행 내용</label>
+                            <textarea placeholder="1회차에서 파악한 브랜드 문제점 및 수행과제 기입..." onchange="updateItem(${index}, 'r1Content', this.value)">${item.r1Content}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- 2회차 컨설팅 (1회차 연계) -->
+                    <div class="round-box">
+                        <h4>
+                            <span>2회차 컨설팅 (연계)</span>
+                            <select onchange="updateItem(${index}, 'r2Status', this.value)" style="font-weight:bold; color:${getStatusColor(item.r2Status)}">
+                                <option value="보류" ${item.r2Status === '보류' ? 'selected' : ''}>보류</option>
+                                <option value="진행" ${item.r2Status === '진행' ? 'selected' : ''}>진행중</option>
+                                <option value="완료" ${item.r2Status === '완료' ? 'selected' : ''}>완료</option>
+                            </select>
+                        </h4>
+                        <div class="form-group">
+                            <label>컨설팅 일시</label>
+                            <input type="datetime-local" value="${item.r2Date}" onchange="updateItem(${index}, 'r2Date', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>담당 컨설턴트</label>
+                            <input type="text" placeholder="담당자 이름" value="${item.r2Manager}" onchange="updateItem(${index}, 'r2Manager', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>2회차 피드백 및 고도화 내용</label>
+                            <textarea placeholder="1회차 수행결과 피드백 및 최종 회사소개서 브랜딩 반영 내용..." onchange="updateItem(${index}, 'r2Content', this.value)">${item.r2Content}</textarea>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function getStatusColor(status) {
+        if (status === '완료') return '#28a745';
+        if (status === '진행') return '#d97706';
+        return '#6c757d';
+    }
+
+    function updateItem(index, key, value) {
+        companies[index][key] = value;
+        autoSave();
+        updateStats();
+        renderCalendar();
+    }
+
+    function autoSave() {
+        localStorage.setItem('suncheon_consulting_v3', JSON.stringify(companies));
+    }
+
+    function saveData() {
+        autoSave();
+        alert("모든 설정값 및 히스토리가 성공적으로 저장되었습니다!");
+    }
+
+    function updateStats() {
+        document.getElementById('stat-total').innerText = companies.length;
+        const collectedCount = companies.filter(c => c.collected).length;
+        document.getElementById('stat-collected').innerText = `${collectedCount} / ${companies.length}`;
+        document.getElementById('stat-r1-done').innerText = companies.filter(c => c.r1Status === "완료").length;
+        document.getElementById('stat-r2-done').innerText = companies.filter(c => c.r2Status === "완료").length;
+    }
+
+    function filterData() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const category = document.getElementById('categoryFilter').value;
+
+        const cards = document.querySelectorAll('.company-card');
+        companies.forEach((item, index) => {
+            const matchesSearch = item.name.toLowerCase().includes(search) || item.owner.toLowerCase().includes(search);
+            const matchesCategory = category === "" || item.category === category;
+
+            if (matchesSearch && matchesCategory) {
+                cards[index].style.display = "";
+            } else {
+                cards[index].style.display = "none";
+            }
+        });
+    }
+
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    /* 월간 달력 스케줄러 렌더링 (주말/공휴일 색상 반영) */
+    function renderCalendar() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+
+        document.getElementById('calendarTitle').innerText = `${year}년 ${month + 1}월`;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+
+        const grid = document.getElementById('calendarDays');
+        grid.innerHTML = '';
+
+        for (let i = 0; i < firstDay; i++) {
+            grid.appendChild(document.createElement('div'));
+        }
+
+        for (let date = 1; date <= lastDate; date++) {
+            const dayDiv = document.createElement('div');
+            const dayOfWeek = new Date(year, month, date).getDay();
+            
+            const monthStr = String(month + 1).padStart(2, '0');
+            const dateStrNum = String(date).padStart(2, '0');
+            const dateStr = `${year}-${monthStr}-${dateStrNum}`;
+
+            let dayClass = "calendar-day";
+            let holidayName = "";
+
+            if (dayOfWeek === 0) dayClass += " sun";
+            if (dayOfWeek === 6) dayClass += " sat";
+            if (koreanHolidays[dateStr]) {
+                dayClass += " holiday";
+                holidayName = `<span class="holiday-label">(${koreanHolidays[dateStr]})</span>`;
+            }
+
+            dayDiv.className = dayClass;
+            dayDiv.innerHTML = `<div class="date-num">${date}${holidayName}</div>`;
+
+            // Filter Events on this Date
+            companies.forEach(comp => {
+                // 1회차
+                if (comp.r1Date && comp.r1Date.startsWith(dateStr)) {
+                    const time = comp.r1Date.split('T')[1] || '';
+                    const card = document.createElement('div');
+                    card.className = `event-card status-${comp.r1Status}`;
+                    card.onclick = () => openModal(comp, 1);
+                    card.innerHTML = `
+                        <span class="status-tag tag-${comp.r1Status}">${comp.r1Status}</span>
+                        <span class="time">${time}</span> <span class="company">${comp.name}</span>
+                        <div>1회차: ${comp.r1Content ? comp.r1Content.substring(0, 12) + '...' : '내용미정'} (${comp.r1Manager || '미정'})</div>
+                    `;
+                    dayDiv.appendChild(card);
+                }
+                // 2회차
+                if (comp.r2Date && comp.r2Date.startsWith(dateStr)) {
+                    const time = comp.r2Date.split('T')[1] || '';
+                    const card = document.createElement('div');
+                    card.className = `event-card status-${comp.r2Status}`;
+                    card.onclick = () => openModal(comp, 2);
+                    card.innerHTML = `
+                        <span class="status-tag tag-${comp.r2Status}">${comp.r2Status}</span>
+                        <span class="time">${time}</span> <span class="company">${comp.name}</span>
+                        <div>2회차: ${comp.r2Content ? comp.r2Content.substring(0, 12) + '...' : '내용미정'} (${comp.r2Manager || '미정'})</div>
+                    `;
+                    dayDiv.appendChild(card);
+                }
+            });
+
+            grid.appendChild(dayDiv);
+        }
+    }
+
+    function changeMonth(delta) {
+        currentDate.setMonth(currentDate.getMonth() + delta);
+        renderCalendar();
+    }
+
+    // Modal Popup Function (1회차 & 2회차 히스토리 연결 연동)
+    function openModal(comp, currentRound) {
+        const modal = document.getElementById('infoModal');
+        document.getElementById('modalCompanyName').innerText = `${comp.name} (${currentRound}회차 컨설팅 일정)`;
+
+        const status = currentRound === 1 ? comp.r1Status : comp.r2Status;
+        const manager = currentRound === 1 ? comp.r1Manager : comp.r2Manager;
+        const content = currentRound === 1 ? comp.r1Content : comp.r2Content;
+        const dateTime = currentRound === 1 ? comp.r1Date : comp.r2Date;
+
+        const encodedAddr = encodeURIComponent(comp.address);
+        const naverMapUrl = `https://m.map.naver.com/search2/search.naver?query=${encodedAddr}`;
+        const statusBg = getStatusColor(status);
+
+        document.getElementById('modalBody').innerHTML = `
+            <p><strong>진행 상태:</strong> <span style="background:${statusBg}; color:white; padding:2px 8px; border-radius:12px; font-weight:bold; font-size:0.8rem;">${status}</span></p>
+            <p><strong>일시 / 담당:</strong> ${dateTime ? dateTime.replace('T', ' ') : '일정미정'} / ${manager || '미정'}</p>
+            <p><strong>분야:</strong> ${comp.category}</p>
+            <p><strong>이번 회차 수행 내용:</strong> ${content || '등록된 내용 없음'}</p>
+            
+            <hr style="margin:12px 0; border:0; border-top:1px dashed #ccc;">
+            
+            <div style="background:#f8fafc; padding:10px; border-radius:6px; font-size:0.85rem;">
+                <div style="font-weight:bold; color:var(--primary-color); margin-bottom:4px;">🔄 연계 히스토리 현황</div>
+                <div><strong>1회차:</strong> ${comp.r1Date ? comp.r1Date.split('T')[0] : '미정'} (${comp.r1Status}) - ${comp.r1Content || '내용없음'}</div>
+                <div><strong>2회차:</strong> ${comp.r2Date ? comp.r2Date.split('T')[0] : '미정'} (${comp.r2Status}) - ${comp.r2Content || '내용없음'}</div>
+            </div>
+
+            <hr style="margin:12px 0; border:0; border-top:1px dashed #ccc;">
+            <p><strong>대표자 / 연락처:</strong> ${comp.owner} (${comp.phone})</p>
+            <p><strong>주소:</strong> ${comp.address}</p>
+            <div style="margin-top:12px; text-align:center;">
+                <a href="${naverMapUrl}" target="_blank" class="map-link" style="padding: 6px 14px; font-size:0.85rem;">
+                    📍 네이버 지도로 길찾기 실행
+                </a>
+            </div>
+        `;
+
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('infoModal').style.display = 'none';
+    }
+
+    window.onload = init;
+</script>
+
+</body>
+</html>
