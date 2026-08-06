@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>순천시 청년 소상공인 초기성장 프로젝트 - 컨설팅 일정 신청</title>
+    <style>
+        :root {
+            --primary-color: #0f2c59;
+            --secondary-color: #0056b3;
+            --bg-color: #f4f7f6;
+            --border-color: #cbd5e1;
+            --text-color: #1e293b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.5; padding: 15px; }
+
+        .container { max-width: 650px; margin: 0 auto; }
+
+        header { background: var(--primary-color); color: white; padding: 22px 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
+        header h1 { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px; }
+        header p { font-size: 0.85rem; opacity: 0.85; margin-top: 4px; }
+
+        .card { background: white; border-radius: 12px; padding: 22px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.04); margin-bottom: 20px; }
+        .card h2 { font-size: 1.15rem; color: var(--primary-color); margin-bottom: 15px; text-align: center; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: bold; margin-bottom: 5px; color: #475569; }
+        .form-group select, .form-group input, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; outline: none; }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: 0.2s; width: 100%; }
+        .btn-primary { background: var(--secondary-color); color: white; }
+        .btn-success { background: #16a34a; color: white; margin-top: 10px; }
+
+        .form-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+        .form-section h3 { font-size: 0.95rem; color: var(--secondary-color); margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>순천시 청년 소상공인 초기성장 프로젝트</h1>
+        <p>1:1 전문가 맞춤형 컨설팅 희망일정 제출 양식</p>
+    </header>
+
+    <!-- 1. 로그인 인증 카드 -->
+    <div id="authCard" class="card">
+        <h2>🏬 참여 점포 인증</h2>
+        <p style="font-size:0.82rem; color:#64748b; text-align:center; margin-bottom:18px;">점포를 선택하고 대표자 연락처 뒤 4자리를 입력해주세요.</p>
+        
+        <div class="form-group">
+            <label>참여 점포 선택</label>
+            <select id="selectCompany">
+                <option value="">-- 점포 선택 --</option>
+                <option value="1">1. 만대재 (장민영 대표)</option>
+                <option value="2">2. 스테잇 (백민경 대표)</option>
+                <option value="3">3. 동동베이킹랩 (최동문 대표)</option>
+                <option value="4">4. 촌스랩 (오태민 대표)</option>
+                <option value="5">5. 고소롱 (장진수 대표)</option>
+                <option value="6">6. 노무사사무소 미르 (조수린 대표)</option>
+                <option value="7">7. 멜리본 (서성호 대표)</option>
+                <option value="8">8. 세허니 (권현정 대표)</option>
+                <option value="9">9. 곡물공간 (정세헌 대표)</option>
+                <option value="10">10. 뉘즈 (김수은 대표)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>비밀번호 (연락처 뒤 4자리)</label>
+            <input type="password" id="authPassword" placeholder="핸드폰 번호 뒤 4자리 입력해주세요." maxlength="4">
+        </div>
+
+        <button class="btn btn-primary" onclick="authenticate()">인증 후 일정 신청하기</button>
+    </div>
+
+    <!-- 2. 일정 및 요청사항 접수 폼 -->
+    <div id="applyFormCard" class="card" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #f1f5f9; padding-bottom:10px; margin-bottom:15px;">
+            <h2 id="displayCompName" style="margin:0; text-align:left;">점포명</h2>
+            <button onclick="logout()" style="background:none; border:none; color:#0284c7; font-size:0.8rem; font-weight:bold; cursor:pointer;">로그아웃</button>
+        </div>
+
+        <!-- 1회차 희망일시 -->
+        <div class="form-section">
+            <h3>📅 1회차 컨설팅 희망일시</h3>
+            <div class="form-group">
+                <label>희망 날짜 및 시간 선택</label>
+                <input type="datetime-local" id="reqR1Date">
+            </div>
+        </div>
+
+        <!-- 2회차 희망일시 -->
+        <div class="form-section">
+            <h3>📅 2회차 컨설팅 희망일시 (연계)</h3>
+            <div class="form-group">
+                <label>희망 날짜 및 시간 선택</label>
+                <input type="datetime-local" id="reqR2Date">
+            </div>
+        </div>
+
+        <!-- 컨설팅 집중 요청사항 -->
+        <div class="form-section">
+            <h3>💡 컨설팅 집중 요청사항 및 고민거리</h3>
+            <div class="form-group">
+                <label>매장 고민거리 / 컨설팅 시 다루고 싶은 주제</label>
+                <textarea id="reqTraits" placeholder="예: 1회차에 매장 디자인 리뉴얼 및 패키지 제작 방향을 집중적으로 논의하고 싶습니다. 주 중 오후 시간대 방문을 희망합니다."></textarea>
+            </div>
+        </div>
+
+        <!-- 기초자료 제출 현황 -->
+        <div class="form-section">
+            <h3>📁 준비된 기초자료 현황 메모</h3>
+            <div class="form-group">
+                <label>제출 가능 자료 (사진, 로고, 홍보물 등)</label>
+                <input type="text" id="reqDocMemo" placeholder="예: 매장 사진 준비 완료, 로고 AI 파일 이메일 제출 예정">
+            </div>
+        </div>
+
+        <button class="btn btn-success" onclick="submitApplication()">💾 컨설팅 희망일정 제출하기</button>
+    </div>
+</div>
+
+<script>
+    const initialCompanies = [
+        { id: 1, name: "만대재", owner: "장민영", phone: "010-4924-1573", pass: "1573", address: "전남 순천시 순천만길 530, 1층", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 2, name: "스테잇", owner: "백민경", phone: "010-9243-6558", pass: "6558", address: "전남 순천시 왕지3길 18-28", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 3, name: "동동베이킹랩", owner: "최동문", phone: "010-3104-0215", pass: "0215", address: "전남 순천시 장명로 13, 다동 1층", category: "복합", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 4, name: "촌스랩", owner: "오태민", phone: "010-5842-0277", pass: "0277", address: "전남 순천시 중앙로 255, F1동 4층", category: "지원사업", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 5, name: "고소롱", owner: "장진수", phone: "010-2716-5614", pass: "5614", address: "전남 순천시 연향1로 40, 상가동 108호", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 6, name: "노무사사무소 미르", owner: "조수린", phone: "010-2753-1858", pass: "1858", address: "전남 순천시 해룡면 지봉로 277, 1층", category: "지원사업", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 7, name: "멜리본", owner: "서성호", phone: "010-4446-0064", pass: "0064", address: "전남 순천시 팔마3길 38", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 8, name: "세허니", owner: "권현정", phone: "010-8502-5508", pass: "5508", address: "전남 순천시 덕월길 112", category: "복합", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 9, name: "곡물공간", owner: "정세헌", phone: "010-7733-9220", pass: "9220", address: "전남 순천시 저전길 18, 2층", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 10, name: "뉘즈", owner: "김수은", phone: "010-9208-3713", pass: "3713", address: "전남 순천시 역전길 34, 2층 19호", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" }
+    ];
+
+    let companies = JSON.parse(localStorage.getItem('suncheon_consulting_v15')) || initialCompanies;
+    let currentCompId = null;
+
+    function authenticate() {
+        const id = document.getElementById('selectCompany').value;
+        const pass = document.getElementById('authPassword').value.trim();
+
+        if (!id) { alert("점포를 선택해 주세요."); return; }
+
+        const comp = companies.find(c => c.id == id);
+        if (comp && comp.pass === pass) {
+            currentCompId = comp.id;
+            document.getElementById('displayCompName').innerText = `${comp.name} (${comp.owner} 대표님)`;
+            document.getElementById('reqR1Date').value = comp.reqR1Date || comp.r1Date || "";
+            document.getElementById('reqR2Date').value = comp.reqR2Date || comp.r2Date || "";
+            document.getElementById('reqTraits').value = comp.traits || "";
+            document.getElementById('reqDocMemo').value = comp.docMemo || "";
+
+            document.getElementById('authCard').style.display = 'none';
+            document.getElementById('applyFormCard').style.display = 'block';
+        } else {
+            alert("비밀번호(연락처 뒤 4자리)가 틀렸습니다.");
+        }
+    }
+
+    function submitApplication() {
+        const idx = companies.findIndex(c => c.id == currentCompId);
+        if (idx !== -1) {
+            const timeNow = new Date().toLocaleString('ko-KR');
+            companies[idx].reqR1Date = document.getElementById('reqR1Date').value;
+            companies[idx].reqR2Date = document.getElementById('reqR2Date').value;
+            companies[idx].traits = document.getElementById('reqTraits').value;
+            companies[idx].docMemo = document.getElementById('reqDocMemo').value;
+            companies[idx].lastModified = timeNow;
+
+            // 관리자가 아직 확정하지 않았다면 희망일시를 일차 확정값으로 자동 세팅
+            if(!companies[idx].r1Date) companies[idx].r1Date = companies[idx].reqR1Date;
+            if(!companies[idx].r2Date) companies[idx].r2Date = companies[idx].reqR2Date;
+
+            localStorage.setItem('suncheon_consulting_v15', JSON.stringify(companies));
+            alert("희망 일정 및 요청사항이 성공적으로 제출되었습니다!");
+        }
+    }
+
+    function logout() {
+        currentCompId = null;
+        document.getElementById('authPassword').value = '';
+        document.getElementById('applyFormCard').style.display = 'none';
+        document.getElementById('authCard').style.display = 'block';
+    }
+</script>
+</body>
+</html>
