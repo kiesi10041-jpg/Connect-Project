@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>순천시 청년 소상공인 초기성장 프로젝트 - 사무국 대시보드</title>
     
-    <!-- Firebase SDK (CDN 방식 - 브라우저 실시간 연동 지원) -->
+    <!-- Firebase SDK (CDN 방식) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -42,9 +42,6 @@
         .stat-card .num { font-size: 1.05rem; font-weight: bold; color: var(--accent-color); }
         .stat-card .label { font-size: 0.68rem; opacity: 0.9; white-space: nowrap; }
 
-        .admin-bar { display: none; background: #fef2f2; border: 1px solid #fca5a5; padding: 10px 14px; border-radius: 8px; margin-bottom: 15px; justify-content: space-between; align-items: center; color: #991b1b; font-size: 0.82rem; font-weight: bold; flex-wrap: wrap; gap: 8px; }
-        .admin-bar button { padding: 6px 12px; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: bold; }
-
         .controls { background: var(--card-bg); padding: 12px 15px; border-radius: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border: 1px solid var(--border-color); }
         .search-filter { display: flex; gap: 8px; flex: 1; flex-wrap: wrap; }
         input[type="text"], select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.88rem; outline: none; }
@@ -53,10 +50,12 @@
         .worker-box label { font-size: 0.8rem; font-weight: bold; color: #0369a1; white-space: nowrap; }
         .worker-box input { padding: 5px 8px; font-size: 0.82rem; width: 110px; border: 1px solid #7dd3fc; }
 
-        .btn-action-group { display: flex; gap: 8px; }
+        .btn-action-group { display: flex; gap: 6px; flex-wrap: wrap; }
         .btn { padding: 9px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.2s; }
         .btn-success { background: var(--status-done); color: white; }
         .btn-print { background: #0f172a; color: white; }
+        .btn-export { background: #4338ca; color: white; }
+        .btn-import { background: #0d9488; color: white; }
         .btn-secondary { background: #475569; color: white; }
         .btn-item-save { background: var(--secondary-color); color: white; padding: 10px 16px; font-weight: bold; font-size: 0.85rem; border: none; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 12px; }
 
@@ -79,7 +78,9 @@
 
         .calendar-day { height: 135px; border: 1px solid var(--border-color); border-radius: 6px; padding: 5px; background: #ffffff; overflow-y: auto; display: flex; flex-direction: column; gap: 3px; }
         .calendar-day .date-num { font-weight: bold; font-size: 0.82rem; margin-bottom: 2px; position: sticky; top: 0; background: white; z-index: 1; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 2px; }
-        
+        .calendar-day.sun .date-num { color: var(--holiday-color); }
+        .calendar-day.sat .date-num { color: var(--saturday-color); }
+
         .event-card { background: #ffffff; padding: 4px 6px; border-radius: 4px; font-size: 0.7rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #cbd5e1; border-left-width: 4px; flex-shrink: 0; }
         .event-card.status-예정 { border-left-color: var(--status-planned); background: #f0f9ff; }
         .event-card.status-진행 { border-left-color: var(--status-progress); background: #fffdf5; }
@@ -90,6 +91,7 @@
         .event-card .company { font-weight: 700; color: #0f172a; }
         .event-card .topic { font-size: 0.65rem; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+        /* Accordion Cards */
         .company-cards-list { display: flex; flex-direction: column; gap: 12px; }
         .accordion-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; }
 
@@ -101,9 +103,11 @@
         .card-detail { display: none; padding: 15px; background: #f8fafc; border-top: 1px solid var(--border-color); }
         .card-detail.open { display: block; }
 
-        .map-link-inline { display: inline-flex; align-items: center; gap: 3px; color: #15803d; text-decoration: none; font-weight: bold; font-size: 0.78rem; background: #dcfce7; padding: 2px 8px; border-radius: 4px; }
+        .map-link-inline { display: inline-flex; align-items: center; gap: 3px; color: #15803d; text-decoration: none; font-weight: bold; font-size: 0.78rem; background: #dcfce7; padding: 2px 8px; border-radius: 4px; border: 1px solid #bbf7d0; margin-left: 6px; }
 
         .req-box { background: #e0f2fe; padding: 10px 12px; border-radius: 8px; border: 1px solid #bae6fd; margin-bottom: 12px; font-size: 0.85rem; color: #0369a1; }
+        .traits-input-box { background: #fffbebf8; padding: 12px; border-radius: 8px; border: 1px solid #fef3c7; margin-top: 10px; margin-bottom: 10px; }
+        .traits-input-box label { font-size: 0.8rem; font-weight: bold; color: #b45309; display: block; margin-bottom: 4px; }
 
         .round-container { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
         .round-box { background: white; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; }
@@ -115,9 +119,35 @@
         .form-group label { font-size: 0.75rem; font-weight: 700; color: #475569; }
         .form-group input, .form-group select, .form-group textarea { font-size: 0.85rem; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; width: 100%; }
 
-        .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+        /* Modal Overlay & Card (3번 이미지 스타일 통합) */
+        .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(3px); }
         .modal-card { background: white; width: 100%; max-width: 520px; border-radius: 16px; padding: 22px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); position: relative; max-height: 90vh; overflow-y: auto; }
         .modal-close { position: absolute; top: 18px; right: 20px; font-size: 1.4rem; cursor: pointer; color: #94a3b8; font-weight: bold; }
+        
+        .modal-popup-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 15px; }
+        .modal-popup-header h2 { font-size: 1.3rem; color: var(--primary-color); font-weight: 800; }
+        .modal-status-badge { padding: 4px 12px; border-radius: 20px; color: white; font-weight: bold; font-size: 0.82rem; }
+
+        .modal-topic-card { background: #f0f9ff; border-left: 4px solid var(--secondary-color); padding: 14px; border-radius: 0 8px 8px 0; margin-bottom: 14px; }
+        .modal-topic-title { font-size: 0.78rem; font-weight: 800; color: var(--secondary-color); text-transform: uppercase; }
+        .modal-topic-body { font-size: 1.0rem; font-weight: 700; color: #0f172a; margin-top: 4px; line-height: 1.4; }
+
+        .modal-traits-card { background: #fffbebf8; border-left: 4px solid #f59e0b; padding: 12px; border-radius: 0 8px 8px 0; margin-bottom: 14px; font-size: 0.88rem; color: #78350f; }
+
+        .modal-history-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+        .modal-section-title { font-size: 0.82rem; font-weight: 800; color: var(--primary-color); margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
+        
+        .history-timeline { display: flex; flex-direction: column; gap: 8px; }
+        .history-step-item { background: white; padding: 10px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.85rem; }
+        .history-step-item.active { border-color: var(--secondary-color); background: #f0f7ff; }
+
+        .modal-contact-card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+        .contact-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.92rem; }
+        .contact-phone-btn { display: inline-flex; align-items: center; gap: 4px; color: var(--secondary-color); text-decoration: none; font-weight: bold; background: #e0f2fe; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; }
+
+        @media (min-width: 769px) {
+            .round-container { grid-template-columns: 1fr 1fr; display: grid; }
+        }
     </style>
 </head>
 <body>
@@ -149,17 +179,20 @@
         </div>
         <div class="worker-box">
             <label>👤 작업자:</label>
-            <input type="text" id="currentWorkerName" value="사무국">
+            <input type="text" id="currentWorkerName" value="심훈">
         </div>
         <div class="btn-action-group">
+            <button class="btn btn-export" onclick="exportDataJSON()">📤 데이터 내보내기</button>
+            <button class="btn btn-import" onclick="document.getElementById('importFile').click()">📥 데이터 불러오기</button>
+            <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importDataJSON(event)">
             <button class="btn btn-print" onclick="window.print()">🜂 현황 보고서 인쇄 (A4)</button>
-            <button class="btn btn-success" onclick="saveAllData()">💾 전체 클라우드 동기화 저장</button>
+            <button class="btn btn-success" onclick="saveAllData()">💾 전체 저장하기</button>
         </div>
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('calendar-view', this)">📅 확정 일정 달력</button>
-        <button class="tab-btn" onclick="switchTab('cards-view', this)">📋 점포별 희망일시 ➔ 확정일정 관리</button>
+        <button class="tab-btn active" onclick="switchTab('calendar-view', this)">📅 월간 달력 스케줄러</button>
+        <button class="tab-btn" onclick="switchTab('cards-view', this)">📋 업소별 상세 및 히스토리</button>
     </div>
 
     <div id="calendar-view" class="tab-content active">
@@ -187,8 +220,15 @@
     </div>
 </div>
 
+<!-- Modal Popup (3번 모달 창 통합) -->
+<div class="modal-overlay" id="infoModal">
+    <div class="modal-card">
+        <span class="modal-close" onclick="closeModal('infoModal')">&times;</span>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
 <script>
-    // 1. Firebase 접속 환경 세팅
     const firebaseConfig = {
         apiKey: "AIzaSyCcNNXDqZJBQVaysHYYyh0J7s5hn2P3DHI",
         authDomain: "connect-project-badac.firebaseapp.com",
@@ -210,7 +250,6 @@
         "2026-10-09": "한글날", "2026-12-25": "성탄절"
     };
 
-    // 기존 등록 일정이 복구된 기본 데이터 세트
     const initialCompanies = [
         { id: 1, name: "만대재", owner: "장민영", phone: "010-4924-1573", address: "전남 순천시 순천만길 530, 1층", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
         { id: 2, name: "스테잇", owner: "백민경", phone: "010-9243-6558", address: "전남 순천시 왕지3길 18-28", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "2026-08-13T10:00", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
@@ -227,7 +266,6 @@
     let companies = initialCompanies;
     let currentDate = new Date(2026, 7, 1);
 
-    // 🔥 클라우드 DB 실시간 수신 설정
     db.collection("consulting_data").onSnapshot((snapshot) => {
         snapshot.forEach((docSnap) => {
             const remoteData = docSnap.data();
@@ -247,6 +285,7 @@
 
         companies[index].docStatus = document.getElementById(`field-docStatus-${index}`).value;
         companies[index].docMemo = document.getElementById(`field-docMemo-${index}`).value;
+        companies[index].traits = document.getElementById(`field-traits-${index}`).value;
 
         companies[index].r1Status = document.getElementById(`field-r1Status-${index}`).value;
         companies[index].r1Date = document.getElementById(`field-r1Date-${index}`).value;
@@ -261,7 +300,7 @@
         companies[index].r2Content = document.getElementById(`field-r2Content-${index}`).value;
 
         db.collection("consulting_data").doc(String(companies[index].id)).set(companies[index], { merge: true })
-            .then(() => alert(`[${companies[index].name}] 확정 정보가 실시간 클라우드 DB에 동기화 저장되었습니다.`))
+            .then(() => alert(`[${companies[index].name}] 정보가 클라우드 DB에 동기화 저장되었습니다.`))
             .catch(e => alert("저장 오류: " + e.message));
     }
 
@@ -271,6 +310,7 @@
             if(docS) {
                 companies[index].docStatus = docS.value;
                 companies[index].docMemo = document.getElementById(`field-docMemo-${index}`).value;
+                companies[index].traits = document.getElementById(`field-traits-${index}`).value;
                 companies[index].r1Status = document.getElementById(`field-r1Status-${index}`).value;
                 companies[index].r1Date = document.getElementById(`field-r1Date-${index}`).value;
                 companies[index].r1Manager1 = document.getElementById(`field-r1Manager1-${index}`).value;
@@ -286,6 +326,42 @@
             }
         });
         alert("전체 데이터가 실시간 클라우드 DB에 통합 저장되었습니다.");
+    }
+
+    function exportDataJSON() {
+        const exportObj = {
+            exportDate: new Date().toLocaleString('ko-KR'),
+            companies: companies
+        };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `suncheon_consulting_backup_${new Date().toISOString().slice(0,10)}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function importDataJSON(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (importedData && importedData.companies) {
+                    companies = importedData.companies;
+                    saveAllData();
+                    renderCards();
+                    updateStats();
+                    renderCalendar();
+                    alert("데이터 불러오기가 성공적으로 완료되었습니다!");
+                }
+            } catch (err) {
+                alert("파일 읽기 오류: " + err.message);
+            }
+        };
+        reader.readAsText(file);
     }
 
     function renderCards() {
@@ -324,21 +400,22 @@
                 </div>
 
                 <div class="card-detail" id="cardDetail-${index}">
+                    ${item.reqR1Date || item.traits ? `
                     <div class="req-box">
                         <div style="font-weight:bold; margin-bottom:4px;">📩 대표님 실시간 신청 희망일시 & 요청사항 (${item.lastModified || '최초'})</div>
                         <div>• <strong>1회차 희망:</strong> ${reqR1} | <strong>2회차 희망:</strong> ${reqR2}</div>
                         <div>• <strong>요청사항/고민:</strong> ${traits || '작성된 요청사항 없음'}</div>
-                    </div>
+                    </div>` : ''}
 
                     <div style="font-size:0.85rem; color:#334155; margin-bottom:8px; display:flex; align-items:center;">
                         📍 <strong>주소:</strong> &nbsp;${item.address}
                         <a href="${naverMapUrl}" target="_blank" class="map-link-inline">📍 네이버 지도 길찾기</a>
                     </div>
                     
-                    <div class="docs-input-box">
-                        <div class="docs-input-header">
-                            <label>📁 기초자료 수집 현황 및 메모</label>
-                            <select id="field-docStatus-${index}" class="docs-status-select" style="color:${getDocStatusColor(docStatus)};">
+                    <div class="docs-input-box" style="background:#ffffff; padding:12px; border-radius:8px; border:1px solid #e2e8f0; margin-top:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <label style="font-size:0.8rem; font-weight:bold; color:var(--primary-color);">📁 기초자료 수집 현황 및 메모</label>
+                            <select id="field-docStatus-${index}" style="font-size:0.78rem; padding:3px 8px; border-radius:4px; font-weight:bold; color:${getDocStatusColor(docStatus)};">
                                 <option value="미수집" ${docStatus === '미수집' ? 'selected' : ''}>상태: 미수집</option>
                                 <option value="부분수집" ${docStatus === '부분수집' ? 'selected' : ''}>상태: 부분수집</option>
                                 <option value="완료" ${docStatus === '완료' ? 'selected' : ''}>상태: 수집완료</option>
@@ -347,10 +424,16 @@
                         <input type="text" id="field-docMemo-${index}" placeholder="예: 사진, 로고 완료 / 기존 홍보물 대기중..." value="${docMemo}">
                     </div>
 
+                    <!-- 💡 1번 노란색 기업 특성 박스 복원 -->
+                    <div class="traits-input-box">
+                        <label>💡 기업 특성 및 사전 참고사항 (성향/주력제품/유의사항)</label>
+                        <input type="text" id="field-traits-${index}" placeholder="예: 대표님 소통 스타일, 주력 디저트 라인업, 브랜드 리뉴얼 니즈 강함 등..." value="${traits}" style="width:100%; font-size:0.85rem; padding:8px; border:1px solid #fcd34d; border-radius:6px; background:#ffffff;">
+                    </div>
+
                     <div class="round-container">
                         <div class="round-box r1">
                             <h4>
-                                <span>1회차 확정 일정</span>
+                                <span>1회차 컨설팅</span>
                                 <select id="field-r1Status-${index}" style="font-weight:bold; color:${getStatusColor(item.r1Status)}">
                                     <option value="예정" ${item.r1Status === '예정' ? 'selected' : ''}>상태: 예정</option>
                                     <option value="진행" ${item.r1Status === '진행' ? 'selected' : ''}>상태: 진행</option>
@@ -359,12 +442,12 @@
                                 </select>
                             </h4>
                             <div class="form-group">
-                                <label>1회차 확정 일시</label>
+                                <label>컨설팅 일시</label>
                                 <input type="datetime-local" id="field-r1Date-${index}" value="${item.r1Date}">
                             </div>
                             <div class="form-group">
                                 <label>담당 컨설턴트 (최대 2인)</label>
-                                <div class="managers-double-box">
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
                                     <input type="text" id="field-r1Manager1-${index}" placeholder="주 담당자" value="${item.r1Manager1 || ''}">
                                     <input type="text" id="field-r1Manager2-${index}" placeholder="부 담당자" value="${item.r1Manager2 || ''}">
                                 </div>
@@ -377,7 +460,7 @@
 
                         <div class="round-box r2">
                             <h4>
-                                <span>2회차 확정 일정 (연계)</span>
+                                <span>2회차 컨설팅 (연계)</span>
                                 <select id="field-r2Status-${index}" style="font-weight:bold; color:${getStatusColor(item.r2Status)}">
                                     <option value="예정" ${item.r2Status === '예정' ? 'selected' : ''}>상태: 예정</option>
                                     <option value="진행" ${item.r2Status === '진행' ? 'selected' : ''}>상태: 진행</option>
@@ -386,12 +469,12 @@
                                 </select>
                             </h4>
                             <div class="form-group">
-                                <label>2회차 확정 일시</label>
+                                <label>컨설팅 일시</label>
                                 <input type="datetime-local" id="field-r2Date-${index}" value="${item.r2Date}">
                             </div>
                             <div class="form-group">
                                 <label>담당 컨설턴트 (최대 2인)</label>
-                                <div class="managers-double-box">
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
                                     <input type="text" id="field-r2Manager1-${index}" placeholder="주 담당자" value="${item.r2Manager1 || ''}">
                                     <input type="text" id="field-r2Manager2-${index}" placeholder="부 담당자" value="${item.r2Manager2 || ''}">
                                 </div>
@@ -403,7 +486,7 @@
                         </div>
                     </div>
 
-                    <button class="btn-item-save" onclick="saveItemData(${index})">💾 [${item.name}] 확정 일정 저장하기</button>
+                    <button class="btn-item-save" onclick="saveItemData(${index})">💾 [${item.name}] 수정사항 저장하기</button>
                 </div>
             `;
             container.appendChild(card);
@@ -450,7 +533,78 @@
         btn.classList.add('active');
     }
 
-    // 📅 달력 그리드 렌더링
+    /* 3번 모달 팝업 복원 */
+    function openModal(comp, currentRound) {
+        const modal = document.getElementById('infoModal');
+
+        const status = currentRound === 1 ? comp.r1Status : comp.r2Status;
+        const mgr1 = currentRound === 1 ? comp.r1Manager1 : comp.r2Manager1;
+        const mgr2 = currentRound === 1 ? comp.r1Manager2 : comp.r2Manager2;
+        const managersText = [mgr1, mgr2].filter(Boolean).join(', ') || '내용, 내용';
+
+        const content = currentRound === 1 ? comp.r1Content : comp.r2Content;
+        const dateTime = currentRound === 1 ? comp.r1Date : comp.r2Date;
+
+        const encodedAddr = encodeURIComponent(comp.address);
+        const naverMapUrl = `https://m.map.naver.com/search2/search.naver?query=${encodedAddr}`;
+        const statusBg = getStatusColor(status);
+
+        document.getElementById('modalBody').innerHTML = `
+            <div class="modal-popup-header">
+                <div>
+                    <h2>${comp.name}</h2>
+                    <span style="font-size:0.85rem; color:#64748b; font-weight:600;">${currentRound}회차 컨설팅 일정</span>
+                </div>
+                <span class="modal-status-badge" style="background:${statusBg};">${status}</span>
+            </div>
+
+            <div class="modal-topic-card">
+                <div class="modal-topic-title">📌 이번 회차 컨설팅 수행 주제 & 과제</div>
+                <div class="modal-topic-body">${content || '내용'}</div>
+                <div style="font-size:0.82rem; color:#64748b; margin-top:8px;">
+                    ⏰ <strong>일시:</strong> ${dateTime ? dateTime.replace('T', ' ') : '일정 미정'} | 👥 <strong>담당:</strong> ${managersText}
+                </div>
+            </div>
+
+            ${comp.traits ? `
+            <div class="modal-traits-card">
+                <strong>💡 기업 특성 및 사전 참고사항:</strong><br>
+                ${comp.traits}
+            </div>` : ''}
+
+            <div class="modal-history-section">
+                <div class="modal-section-title">🔄 1회차 ↔ 2회차 연계 컨설팅 히스토리</div>
+                <div class="history-timeline">
+                    <div class="history-step-item ${currentRound === 1 ? 'active' : ''}">
+                        <strong>[1회차]</strong> ${comp.r1Date ? comp.r1Date.split('T')[0] : '미정'} (${comp.r1Status})<br>
+                        <span style="color:#475569;">${comp.r1Content || '내용'}</span>
+                    </div>
+                    <div class="history-step-item ${currentRound === 2 ? 'active' : ''}">
+                        <strong>[2회차]</strong> ${comp.r2Date ? comp.r2Date.split('T')[0] : '미정'} (${comp.r2Status})<br>
+                        <span style="color:#475569;">${comp.r2Content || '내용 없음'}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-contact-card">
+                <div class="contact-row">
+                    <span><strong>대표자:</strong> ${comp.owner}</span>
+                    <a href="tel:${comp.phone}" class="contact-phone-btn">📞 ${comp.phone} 전화걸기</a>
+                </div>
+                <div style="font-size:0.88rem; color:#334155; margin-top:6px; display:flex; align-items:center; justify-content:space-between;">
+                    <span><strong>주소:</strong> ${comp.address}</span>
+                    <a href="${naverMapUrl}" target="_blank" class="map-link-inline">📍 길찾기</a>
+                </div>
+            </div>
+        `;
+
+        modal.style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
     function renderCalendar() {
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
@@ -483,7 +637,7 @@
             if (dayOfWeek === 6) dayClass += " sat";
             if (koreanHolidays[dateStr]) {
                 dayClass += " holiday";
-                holidayName = `<span class="holiday-label">(${koreanHolidays[dateStr]})</span>`;
+                holidayName = `<span style="font-size:0.65rem;">(${koreanHolidays[dateStr]})</span>`;
             }
 
             dayDiv.className = dayClass;
@@ -508,6 +662,7 @@
 
                 const card = document.createElement('div');
                 card.className = `event-card status-${status}`;
+                card.onclick = () => openModal(comp, ev.type);
                 card.innerHTML = `
                     <div><span class="time">${time}</span> <span class="company">${comp.name}</span> (${ev.type}회)</div>
                     <div class="topic">📌 ${content || '주제 미정'}</div>
