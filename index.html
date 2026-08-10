@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>순천시 청년 소상공인 초기성장 프로젝트 - 컨설팅 일정 스케줄러</title>
+    <title>순천시 청년 소상공인 초기성장 프로젝트 - 사무국 대시보드</title>
     <style>
         :root {
             --primary-color: #0f2c59;
@@ -16,10 +16,10 @@
             --border-color: #e2e8f0;
             --text-color: #1e293b;
             
-            --status-planned: #0284c7;   /* 예정 */
-            --status-progress: #d97706;  /* 진행 */
-            --status-done: #16a34a;      /* 완료 */
-            --status-hold: #64748b;      /* 보류 */
+            --status-planned: #0284c7;
+            --status-progress: #d97706;
+            --status-done: #16a34a;
+            --status-hold: #64748b;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -27,7 +27,6 @@
 
         .container { max-width: 1400px; margin: 0 auto; }
 
-        /* Header */
         header { background: var(--primary-color); color: white; padding: 16px 20px; border-radius: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
         .header-title-box { cursor: pointer; user-select: none; }
         .header-title-box h1 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; }
@@ -38,31 +37,21 @@
         .stat-card .num { font-size: 1.05rem; font-weight: bold; color: var(--accent-color); }
         .stat-card .label { font-size: 0.68rem; opacity: 0.9; white-space: nowrap; }
 
-        /* Admin Bar */
-        .admin-bar { display: none; background: #fef2f2; border: 1px solid #fca5a5; padding: 10px 14px; border-radius: 8px; margin-bottom: 15px; justify-content: space-between; align-items: center; color: #991b1b; font-size: 0.82rem; font-weight: bold; flex-wrap: wrap; gap: 8px; }
-        .admin-bar button { padding: 6px 12px; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: bold; }
-
-        /* Controls */
         .controls { background: var(--card-bg); padding: 12px 15px; border-radius: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border: 1px solid var(--border-color); }
         .search-filter { display: flex; gap: 8px; flex: 1; flex-wrap: wrap; }
-        input[type="text"], select { padding: 9px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.88rem; outline: none; }
+        input[type="text"], select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.88rem; outline: none; }
         
         .worker-box { display: flex; align-items: center; gap: 6px; background: #e0f2fe; padding: 4px 10px; border-radius: 6px; border: 1px solid #bae6fd; }
         .worker-box label { font-size: 0.8rem; font-weight: bold; color: #0369a1; white-space: nowrap; }
         .worker-box input { padding: 5px 8px; font-size: 0.82rem; width: 110px; border: 1px solid #7dd3fc; }
 
-        .btn-action-group { display: flex; gap: 6px; flex-wrap: wrap; }
+        .btn-action-group { display: flex; gap: 8px; }
         .btn { padding: 9px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.2s; }
         .btn-success { background: var(--status-done); color: white; }
         .btn-print { background: #0f172a; color: white; }
-        .btn-export { background: #4338ca; color: white; }
-        .btn-import { background: #0d9488; color: white; }
         .btn-secondary { background: #475569; color: white; }
-        
         .btn-item-save { background: var(--secondary-color); color: white; padding: 10px 16px; font-weight: bold; font-size: 0.85rem; border: none; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 12px; }
-        .btn-item-save:hover { background: #003d80; }
 
-        /* Tabs */
         .tabs { display: flex; gap: 6px; margin-bottom: 15px; }
         .tab-btn { flex: 1; padding: 12px 10px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--text-color); font-size: 0.85rem; text-align: center; }
         .tab-btn.active { background: var(--secondary-color); color: white; border-color: var(--secondary-color); }
@@ -70,7 +59,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Calendar */
         .calendar-container { background: var(--card-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .calendar-header h2 { font-size: 1.15rem; color: var(--primary-color); }
@@ -80,13 +68,9 @@
         .calendar-day-header.sun { color: var(--holiday-color); }
         .calendar-day-header.sat { color: var(--saturday-color); }
 
-        .calendar-day { height: 130px; border: 1px solid var(--border-color); border-radius: 6px; padding: 5px; background: #ffffff; overflow-y: auto; display: flex; flex-direction: column; gap: 3px; }
-        .calendar-day .date-num { font-weight: bold; font-size: 0.82rem; margin-bottom: 2px; position: sticky; top: 0; background: white; z-index: 1; display: flex; justify-content: space-between; align-items: center; }
-        .calendar-day.sun .date-num { color: var(--holiday-color); }
-        .calendar-day.sat .date-num { color: var(--saturday-color); }
-        .calendar-day.holiday .date-num { color: var(--holiday-color); }
-        .holiday-label { font-size: 0.65rem; font-weight: normal; }
-
+        .calendar-day { height: 135px; border: 1px solid var(--border-color); border-radius: 6px; padding: 5px; background: #ffffff; overflow-y: auto; display: flex; flex-direction: column; gap: 3px; }
+        .calendar-day .date-num { font-weight: bold; font-size: 0.82rem; margin-bottom: 2px; position: sticky; top: 0; background: white; z-index: 1; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 2px; }
+        
         .event-card { background: #ffffff; padding: 4px 6px; border-radius: 4px; font-size: 0.7rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #cbd5e1; border-left-width: 4px; flex-shrink: 0; }
         .event-card.status-예정 { border-left-color: var(--status-planned); background: #f0f9ff; }
         .event-card.status-진행 { border-left-color: var(--status-progress); background: #fffdf5; }
@@ -95,13 +79,7 @@
         
         .event-card .time { font-weight: 800; color: var(--primary-color); }
         .event-card .company { font-weight: 700; color: #0f172a; }
-        .event-card .topic { font-size: 0.66rem; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
 
-        .mobile-schedule-list { display: none; flex-direction: column; gap: 10px; }
-        .mobile-date-group { background: white; border-radius: 8px; border: 1px solid var(--border-color); padding: 12px; }
-        .mobile-date-header { font-weight: bold; font-size: 0.95rem; color: var(--primary-color); padding-bottom: 6px; border-bottom: 1px solid #f1f5f9; margin-bottom: 8px; display: flex; justify-content: space-between; }
-
-        /* Accordion Card */
         .company-cards-list { display: flex; flex-direction: column; gap: 12px; }
         .accordion-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; }
 
@@ -109,25 +87,13 @@
         .summary-left { display: flex; align-items: center; gap: 10px; }
         .company-num { font-size: 1.0rem; font-weight: 800; color: var(--secondary-color); }
         .company-name-box h3 { font-size: 1.0rem; font-weight: 700; color: var(--primary-color); }
-        .company-info-text { font-size: 0.78rem; color: #64748b; margin-top: 1px; }
-
-        .summary-right { display: flex; align-items: center; gap: 6px; }
-        .round-status-pill { font-size: 0.7rem; font-weight: 600; padding: 3px 6px; border-radius: 12px; background: #f1f5f9; }
-        .toggle-btn { background: #f1f5f9; border: none; padding: 5px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: var(--secondary-color); }
 
         .card-detail { display: none; padding: 15px; background: #f8fafc; border-top: 1px solid var(--border-color); }
         .card-detail.open { display: block; }
 
-        .map-link-inline { display: inline-flex; align-items: center; gap: 3px; color: #15803d; text-decoration: none; font-weight: bold; font-size: 0.78rem; background: #dcfce7; padding: 2px 8px; border-radius: 4px; border: 1px solid #bbf7d0; margin-left: 6px; }
-        .map-link-inline:hover { background: #bbf7d0; }
+        .map-link-inline { display: inline-flex; align-items: center; gap: 3px; color: #15803d; text-decoration: none; font-weight: bold; font-size: 0.78rem; background: #dcfce7; padding: 2px 8px; border-radius: 4px; }
 
-        .docs-input-box { background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 10px; }
-        .docs-input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .docs-input-header label { font-size: 0.8rem; font-weight: bold; color: var(--primary-color); }
-        .docs-status-select { font-size: 0.78rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
-
-        .traits-input-box { background: #fffbebf8; padding: 12px; border-radius: 8px; border: 1px solid #fef3c7; margin-top: 10px; }
-        .traits-input-box label { font-size: 0.8rem; font-weight: bold; color: #b45309; display: block; margin-bottom: 4px; }
+        .req-box { background: #e0f2fe; padding: 10px 12px; border-radius: 8px; border: 1px solid #bae6fd; margin-bottom: 12px; font-size: 0.85rem; color: #0369a1; }
 
         .round-container { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
         .round-box { background: white; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; }
@@ -138,204 +104,24 @@
         .form-group { display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px; }
         .form-group label { font-size: 0.75rem; font-weight: 700; color: #475569; }
         .form-group input, .form-group select, .form-group textarea { font-size: 0.85rem; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; width: 100%; }
-        .form-group textarea { resize: vertical; min-height: 55px; }
-
-        .managers-double-box { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-
-        /* Modal Overlay & Cards */
-        .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(3px); }
-        .modal-card { background: white; width: 100%; max-width: 520px; border-radius: 16px; padding: 22px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); position: relative; max-height: 90vh; overflow-y: auto; }
-        .modal-close { position: absolute; top: 18px; right: 20px; font-size: 1.4rem; cursor: pointer; color: #94a3b8; font-weight: bold; }
-        
-        .modal-popup-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 15px; }
-        .modal-popup-header h2 { font-size: 1.3rem; color: var(--primary-color); font-weight: 800; }
-        .modal-status-badge { padding: 4px 12px; border-radius: 20px; color: white; font-weight: bold; font-size: 0.82rem; }
-
-        .modal-topic-card { background: #f0f9ff; border-left: 4px solid var(--secondary-color); padding: 14px; border-radius: 0 8px 8px 0; margin-bottom: 14px; }
-        .modal-topic-title { font-size: 0.78rem; font-weight: 800; color: var(--secondary-color); text-transform: uppercase; }
-        .modal-topic-body { font-size: 1.0rem; font-weight: 700; color: #0f172a; margin-top: 4px; line-height: 1.4; }
-
-        .modal-traits-card { background: #fffbebf8; border-left: 4px solid #f59e0b; padding: 12px; border-radius: 0 8px 8px 0; margin-bottom: 14px; font-size: 0.88rem; color: #78350f; }
-
-        .modal-history-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
-        .modal-section-title { font-size: 0.82rem; font-weight: 800; color: var(--primary-color); margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
-        
-        .history-timeline { display: flex; flex-direction: column; gap: 8px; }
-        .history-step-item { background: white; padding: 10px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.85rem; }
-        .history-step-item.active { border-color: var(--secondary-color); background: #f0f7ff; }
-
-        .modal-contact-card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
-        .contact-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.92rem; }
-        .contact-phone-btn { display: inline-flex; align-items: center; gap: 4px; color: var(--secondary-color); text-decoration: none; font-weight: bold; background: #e0f2fe; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; }
-
-        .history-list { max-height: 280px; overflow-y: auto; margin-top: 12px; border: 1px solid var(--border-color); border-radius: 8px; }
-        .history-item { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; gap: 8px; }
-
-        /* --- 🜂 A4 인쇄 전용 스타일 (@media print) --- */
-        @media print {
-            @page {
-                size: A4 portrait;
-                margin: 12mm 15mm;
-            }
-            body {
-                background: white;
-                color: black;
-                padding: 0;
-                font-size: 10pt;
-            }
-            header, .admin-bar, .controls, .tabs, .calendar-container, .modal-overlay, .toggle-btn, .btn-item-save, .map-link-inline {
-                display: none !important;
-            }
-            .container {
-                max-width: 100%;
-                margin: 0;
-            }
-            .tab-content {
-                display: block !important;
-            }
-            .company-cards-list {
-                gap: 0;
-            }
-            .accordion-card {
-                border: none;
-                border-bottom: 2px solid #000;
-                border-radius: 0;
-                page-break-inside: avoid;
-                margin-bottom: 20px;
-                padding-bottom: 15px;
-            }
-            .card-summary {
-                padding: 0 0 10px 0;
-                border-bottom: 1px solid #333;
-            }
-            .company-num { color: #000; font-size: 12pt; }
-            .company-name-box h3 { font-size: 14pt; color: #000; }
-            .company-info-text { font-size: 10pt; color: #222; }
-            
-            .card-detail {
-                display: block !important;
-                background: white;
-                padding: 10px 0 0 0;
-                border: none;
-            }
-            .docs-input-box, .traits-input-box {
-                background: #f8fafc;
-                border: 1px solid #ccc;
-                padding: 8px;
-                margin-top: 8px;
-                font-size: 9pt;
-            }
-            .round-container {
-                display: grid !important;
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-                margin-top: 10px;
-            }
-            .round-box {
-                border: 1px solid #666 !important;
-                border-top: 2px solid #000 !important;
-                padding: 8px;
-                background: white;
-            }
-            .round-box h4 {
-                font-size: 10pt;
-                color: black;
-                border-bottom: 1px solid #ccc;
-                padding-bottom: 4px;
-            }
-            input, select, textarea {
-                border: none !important;
-                background: transparent !important;
-                padding: 0 !important;
-                font-size: 9pt !important;
-                color: black !important;
-                appearance: none;
-            }
-            textarea {
-                min-height: auto !important;
-            }
-            .print-report-header {
-                display: block !important;
-                text-align: center;
-                border-bottom: 2px solid #000;
-                padding-bottom: 12px;
-                margin-bottom: 20px;
-            }
-            .print-report-header h1 {
-                font-size: 18pt;
-                color: #000;
-            }
-            .print-report-header p {
-                font-size: 10pt;
-                color: #555;
-            }
-        }
-
-        .print-report-header { display: none; }
-
-        @media (max-width: 768px) {
-            body { padding: 10px; }
-            .stats-container { margin-top: 8px; }
-            .btn { padding: 12px; font-size: 0.9rem; }
-            .calendar-grid { display: none; }
-            .mobile-schedule-list { display: flex; }
-            .card-summary { padding: 10px 12px; }
-            .summary-right { flex-direction: column; align-items: flex-end; gap: 2px; }
-        }
-
-        @media (min-width: 769px) {
-            .stats-container { width: auto; }
-            .search-filter { width: auto; }
-            .btn { width: auto; }
-            .round-container { grid-template-columns: 1fr 1fr; display: grid; }
-        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- 인쇄 전용 공문서 헤더 -->
-    <div class="print-report-header">
-        <h1>순천시 청년 소상공인 초기성장 프로젝트 - 점포별 컨설팅 현황 보고서</h1>
-        <p>발행일시: <span id="printDate">2026. 08. 04</span> | 총 10개 참여기업 관리 현황</p>
-    </div>
-
-    <!-- Header -->
     <header>
-        <div class="header-title-box" onclick="handleHeaderClick()">
+        <div class="header-title-box">
             <h1>순천시 청년 소상공인 초기성장 프로젝트</h1>
-            <p>디자인 & 마케팅 공동 컨설팅 일정 스케줄러</p>
+            <p>사무국 실시간 클라우드 연동 일정 통합 대시보드</p>
         </div>
         <div class="stats-container">
-            <div class="stat-card">
-                <div class="num" id="stat-total">10</div>
-                <div class="label">전체 점포</div>
-            </div>
-            <div class="stat-card">
-                <div class="num" id="stat-collected">0 / 10</div>
-                <div class="label">자료수집 완료</div>
-            </div>
-            <div class="stat-card">
-                <div class="num" id="stat-r1-done">0</div>
-                <div class="label">1회차 완료</div>
-            </div>
-            <div class="stat-card">
-                <div class="num" id="stat-r2-done">0</div>
-                <div class="label">2회차 완료</div>
-            </div>
+            <div class="stat-card"><div class="num" id="stat-total">10</div><div class="label">전체 점포</div></div>
+            <div class="stat-card"><div class="num" id="stat-collected">0 / 10</div><div class="label">자료수집 완료</div></div>
+            <div class="stat-card"><div class="num" id="stat-r1-done">0</div><div class="label">1회차 완료</div></div>
+            <div class="stat-card"><div class="num" id="stat-r2-done">0</div><div class="label">2회차 완료</div></div>
         </div>
     </header>
 
-    <!-- Admin Bar -->
-    <div class="admin-bar" id="adminBar">
-        <span>🔓 관리자 모드 (수정 이력 / 복원 권한 활성화됨)</span>
-        <div>
-            <button onclick="openHistoryModal()">📜 수정이력 & 되돌리기</button>
-            <button onclick="exitAdminMode()" style="background:#475569; margin-left:4px;">종료</button>
-        </div>
-    </div>
-
-    <!-- Controls -->
     <div class="controls">
         <div class="search-filter">
             <input type="text" id="searchInput" placeholder="업소명 / 대표자 검색..." onkeyup="filterData()">
@@ -347,28 +133,21 @@
                 <option value="지원사업">지원사업</option>
             </select>
         </div>
-        
         <div class="worker-box">
             <label>👤 작업자:</label>
-            <input type="text" id="currentWorkerName" placeholder="작업자 성함" value="담당자" onchange="saveWorkerName()">
+            <input type="text" id="currentWorkerName" value="사무국">
         </div>
-
         <div class="btn-action-group">
-            <button class="btn btn-export" onclick="exportDataJSON()">📤 데이터 내보내기</button>
-            <button class="btn btn-import" onclick="document.getElementById('importFile').click()">📥 데이터 불러오기</button>
-            <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importDataJSON(event)">
             <button class="btn btn-print" onclick="window.print()">🜂 현황 보고서 인쇄 (A4)</button>
             <button class="btn btn-success" onclick="saveAllData()">💾 전체 저장하기</button>
         </div>
     </div>
 
-    <!-- Navigation Tabs -->
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('calendar-view', this)">📅 월간 달력 스케줄러</button>
-        <button class="tab-btn" onclick="switchTab('cards-view', this)">📋 업소별 상세 및 히스토리</button>
+        <button class="tab-btn active" onclick="switchTab('calendar-view', this)">📅 확정 일정 달력</button>
+        <button class="tab-btn" onclick="switchTab('cards-view', this)">📋 점포별 희망일시 ➔ 확정일정 관리</button>
     </div>
 
-    <!-- Tab 1: Calendar View -->
     <div id="calendar-view" class="tab-content active">
         <div class="calendar-container">
             <div class="calendar-header">
@@ -376,7 +155,6 @@
                 <h2 id="calendarTitle">2026년 8월</h2>
                 <button class="btn btn-secondary" style="padding:6px 12px; width:auto;" onclick="changeMonth(1)">다음달 ▶</button>
             </div>
-            
             <div class="calendar-grid">
                 <div class="calendar-day-header sun">일</div>
                 <div class="calendar-day-header">월</div>
@@ -387,170 +165,111 @@
                 <div class="calendar-day-header sat">토</div>
             </div>
             <div class="calendar-grid" id="calendarDays"></div>
-
-            <div class="mobile-schedule-list" id="mobileScheduleList"></div>
         </div>
     </div>
 
-    <!-- Tab 2: Company Cards List -->
     <div id="cards-view" class="tab-content">
         <div class="company-cards-list" id="companyCardsContainer"></div>
     </div>
 </div>
 
-<!-- Modal Popup -->
-<div class="modal-overlay" id="infoModal">
-    <div class="modal-card">
-        <span class="modal-close" onclick="closeModal('infoModal')">&times;</span>
-        <div class="modal-body" id="modalBody"></div>
-    </div>
-</div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-<!-- History Modal -->
-<div class="modal-overlay" id="historyModal">
-    <div class="modal-card">
-        <span class="modal-close" onclick="closeModal('historyModal')">&times;</span>
-        <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
-            <h3>📜 수정 히스토리 관리</h3>
-            <button onclick="clearAllHistory()" style="background:#ef4444; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; cursor:pointer;">🗑️ 전체 비우기</button>
-        </div>
-        <p style="font-size:0.8rem; color:#64748b;">최대 30개까지 자동 관리됩니다. 필요 없는 기록은 [삭제]할 수 있습니다.</p>
-        <div class="history-list" id="historyListContainer"></div>
-    </div>
-</div>
-
-<script>
-    const koreanHolidays = {
-        "2026-01-01": "신정", "2026-02-16": "설날연휴", "2026-02-17": "설날", "2026-02-18": "설날연휴",
-        "2026-03-01": "삼일절", "2026-03-02": "대체공휴일", "2026-05-05": "어린이날", "2026-05-24": "부처님오신날",
-        "2026-05-25": "대체공휴일", "2026-06-06": "현충일", "2026-08-15": "광복절", "2026-08-17": "대체공휴일",
-        "2026-09-24": "추석연휴", "2026-09-25": "추석", "2026-09-26": "추석연휴", "2026-10-03": "개천절",
-        "2026-10-09": "한글날", "2026-12-25": "성탄절"
+    const firebaseConfig = {
+        apiKey: "AIzaSyCcNNXDqZJBQVaysHYYyh0J7s5hn2P3DHI",
+        authDomain: "connect-project-badac.firebaseapp.com",
+        projectId: "connect-project-badac",
+        storageBucket: "connect-project-badac.firebasestorage.app",
+        messagingSenderId: "2013356456",
+        appId: "1:2013356456:web:b08f2938df8d271edd3d9d",
+        measurementId: "G-J0FMB441TR"
     };
 
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
     const initialCompanies = [
-        { id: 1, name: "만대재", owner: "장민영", phone: "010-4924-1573", address: "전남 순천시 순천만길 530, 1층", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 2, name: "스테잇", owner: "백민경", phone: "010-9243-6558", address: "전남 순천시 왕지3길 18-28", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 3, name: "동동베이킹랩", owner: "최동문", phone: "010-3104-0215", address: "전남 순천시 장명로 13, 다동 1층", category: "복합", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 4, name: "촌스랩", owner: "오태민", phone: "010-5842-0277", address: "전남 순천시 중앙로 255, F1동 4층", category: "지원사업", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 5, name: "고소롱", owner: "장진수", phone: "010-2716-5614", address: "전남 순천시 연향1로 40, 상가동 108호", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 6, name: "노무사사무소 미르", owner: "조수린", phone: "010-2753-1858", address: "전남 순천시 해룡면 지봉로 277, 1층", category: "지원사업", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 7, name: "멜리본", owner: "서성호", phone: "010-4446-0064", address: "전남 순천시 팔마3길 38", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 8, name: "세허니", owner: "권현정", phone: "010-8502-5508", address: "전남 순천시 덕월길 112", category: "복합", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 9, name: "곡물공간", owner: "정세헌", phone: "010-7733-9220", address: "전남 순천시 저전길 18, 2층", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
-        { id: 10, name: "뉘즈", owner: "김수은", phone: "010-9208-3713", address: "전남 순천시 역전길 34, 2층 19호", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" }
+        { id: 1, name: "만대재", owner: "장민영", phone: "010-4924-1573", address: "전남 순천시 순천만길 530, 1층", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 2, name: "스테잇", owner: "백민경", phone: "010-9243-6558", address: "전남 순천시 왕지3길 18-28", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 3, name: "동동베이킹랩", owner: "최동문", phone: "010-3104-0215", address: "전남 순천시 장명로 13, 다동 1층", category: "복합", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 4, name: "촌스랩", owner: "오태민", phone: "010-5842-0277", address: "전남 순천시 중앙로 255, F1동 4층", category: "지원사업", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 5, name: "고소롱", owner: "장진수", phone: "010-2716-5614", address: "전남 순천시 연향1로 40, 상가동 108호", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 6, name: "노무사사무소 미르", owner: "조수린", phone: "010-2753-1858", address: "전남 순천시 해룡면 지봉로 277, 1층", category: "지원사업", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 7, name: "멜리본", owner: "서성호", phone: "010-4446-0064", address: "전남 순천시 팔마3길 38", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 8, name: "세허니", owner: "권현정", phone: "010-8502-5508", address: "전남 순천시 덕월길 112", category: "복합", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 9, name: "곡물공간", owner: "정세헌", phone: "010-7733-9220", address: "전남 순천시 저전길 18, 2층", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 10, name: "뉘즈", owner: "김수은", phone: "010-9208-3713", address: "전남 순천시 역전길 34, 2층 19호", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" }
     ];
 
-    let companies = JSON.parse(localStorage.getItem('suncheon_consulting_v13')) || initialCompanies;
-    let historyStack = JSON.parse(localStorage.getItem('suncheon_history_stack_v13')) || [];
-    let currentWorker = localStorage.getItem('suncheon_worker_name') || '담당자';
+    let companies = initialCompanies;
     let currentDate = new Date(2026, 7, 1);
 
-    let headerClickCount = 0;
-    let clickTimer = null;
-    let isAdmin = false;
-
-    function init() {
-        document.getElementById('currentWorkerName').value = currentWorker;
-        document.getElementById('printDate').innerText = new Date().toLocaleDateString('ko-KR');
+    onSnapshot(collection(db, "consulting_data"), (snapshot) => {
+        snapshot.forEach((docSnap) => {
+            const remoteData = docSnap.data();
+            const idx = companies.findIndex(c => c.id == remoteData.id);
+            if (idx !== -1) {
+                companies[idx] = { ...companies[idx], ...remoteData };
+            }
+        });
         renderCards();
         updateStats();
         renderCalendar();
-    }
+    });
 
-    /* 📤 데이터 내보내기 (JSON 파일 다운로드) */
-    function exportDataJSON() {
-        const exportObj = {
-            exportDate: new Date().toLocaleString('ko-KR'),
-            worker: currentWorker,
-            companies: companies,
-            historyStack: historyStack
-        };
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
-        const downloadAnchor = document.createElement('a');
-        const fileName = `suncheon_consulting_backup_${new Date().toISOString().slice(0,10)}.json`;
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", fileName);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-        alert(`최신 데이터가 [${fileName}] 파일로 다운로드되었습니다.`);
-    }
+    window.saveItemData = async function(index) {
+        const modTime = new Date().toLocaleString('ko-KR');
+        companies[index].lastModified = modTime;
 
-    /* 📥 데이터 불러오기 (JSON 파일 선택) */
-    function importDataJSON(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+        companies[index].docStatus = document.getElementById(`field-docStatus-${index}`).value;
+        companies[index].docMemo = document.getElementById(`field-docMemo-${index}`).value;
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const importedData = JSON.parse(e.target.result);
-                if (importedData && importedData.companies) {
-                    if (confirm(`[${importedData.exportDate || '불러온 데이터'}]의 최신 데이터로 업데이트하시겠습니까?`)) {
-                        companies = importedData.companies;
-                        if (importedData.historyStack) historyStack = importedData.historyStack;
-                        autoSave();
-                        init();
-                        alert("데이터 불러오기 및 최신 상태 적용이 성공적으로 완료되었습니다!");
-                    }
-                } else {
-                    alert("올바르지 않은 데이터 파일 형식입니다.");
-                }
-            } catch (err) {
-                alert("파일을 읽는 도중 오류가 발생했습니다: " + err.message);
+        companies[index].r1Status = document.getElementById(`field-r1Status-${index}`).value;
+        companies[index].r1Date = document.getElementById(`field-r1Date-${index}`).value;
+        companies[index].r1Manager1 = document.getElementById(`field-r1Manager1-${index}`).value;
+        companies[index].r1Manager2 = document.getElementById(`field-r1Manager2-${index}`).value;
+        companies[index].r1Content = document.getElementById(`field-r1Content-${index}`).value;
+
+        companies[index].r2Status = document.getElementById(`field-r2Status-${index}`).value;
+        companies[index].r2Date = document.getElementById(`field-r2Date-${index}`).value;
+        companies[index].r2Manager1 = document.getElementById(`field-r2Manager1-${index}`).value;
+        companies[index].r2Manager2 = document.getElementById(`field-r2Manager2-${index}`).value;
+        companies[index].r2Content = document.getElementById(`field-r2Content-${index}`).value;
+
+        try {
+            await setDoc(doc(db, "consulting_data", String(companies[index].id)), companies[index], { merge: true });
+            alert(`[${companies[index].name}] 정보가 클라우드 DB에 연동 저장되었습니다.`);
+        } catch(e) {
+            alert("저장 오류: " + e.message);
+        }
+    };
+
+    window.saveAllData = async function() {
+        for (let index = 0; index < companies.length; index++) {
+            const docS = document.getElementById(`field-docStatus-${index}`);
+            if(docS) {
+                companies[index].docStatus = docS.value;
+                companies[index].docMemo = document.getElementById(`field-docMemo-${index}`).value;
+                companies[index].r1Status = document.getElementById(`field-r1Status-${index}`).value;
+                companies[index].r1Date = document.getElementById(`field-r1Date-${index}`).value;
+                companies[index].r1Manager1 = document.getElementById(`field-r1Manager1-${index}`).value;
+                companies[index].r1Manager2 = document.getElementById(`field-r1Manager2-${index}`).value;
+                companies[index].r1Content = document.getElementById(`field-r1Content-${index}`).value;
+                companies[index].r2Status = document.getElementById(`field-r2Status-${index}`).value;
+                companies[index].r2Date = document.getElementById(`field-r2Date-${index}`).value;
+                companies[index].r2Manager1 = document.getElementById(`field-r2Manager1-${index}`).value;
+                companies[index].r2Manager2 = document.getElementById(`field-r2Manager2-${index}`).value;
+                companies[index].r2Content = document.getElementById(`field-r2Content-${index}`).value;
+                
+                await setDoc(doc(db, "consulting_data", String(companies[index].id)), companies[index], { merge: true });
             }
-        };
-        reader.readAsText(file);
-    }
-
-    function saveWorkerName() {
-        currentWorker = document.getElementById('currentWorkerName').value.trim() || '담당자';
-        localStorage.setItem('suncheon_worker_name', currentWorker);
-    }
-
-    function handleHeaderClick() {
-        headerClickCount++;
-        clearTimeout(clickTimer);
-        if (headerClickCount >= 3) {
-            headerClickCount = 0;
-            promptAdminPassword();
-        } else {
-            clickTimer = setTimeout(() => { headerClickCount = 0; }, 1000);
         }
-    }
+        alert("전체 데이터 클라우드 동기화 저장이 완료되었습니다.");
+    };
 
-    function promptAdminPassword() {
-        const password = prompt("🔐 관리자 비밀번호 입력:");
-        if (password === "1111") {
-            isAdmin = true;
-            document.getElementById('adminBar').style.display = 'flex';
-            alert("관리자 권한 승인 완료.");
-        } else if (password !== null) {
-            alert("비밀번호가 올바르지 않습니다.");
-        }
-    }
-
-    function exitAdminMode() {
-        isAdmin = false;
-        document.getElementById('adminBar').style.display = 'none';
-    }
-
-    function pushHistory(description) {
-        saveWorkerName();
-        const snapshot = {
-            id: Date.now(),
-            worker: currentWorker,
-            timestamp: new Date().toLocaleString('ko-KR'),
-            desc: `[${currentWorker}] ${description}`,
-            data: JSON.parse(JSON.stringify(companies))
-        };
-        historyStack.unshift(snapshot);
-        if (historyStack.length > 30) historyStack.pop();
-        localStorage.setItem('suncheon_history_stack_v13', JSON.stringify(historyStack));
-    }
-
-    function renderCards() {
+    window.renderCards = function() {
         const container = document.getElementById('companyCardsContainer');
         container.innerHTML = '';
 
@@ -561,6 +280,9 @@
             const docStatus = item.docStatus || '미수집';
             const docMemo = item.docMemo || '';
             const traits = item.traits || '';
+
+            const reqR1 = item.reqR1Date ? item.reqR1Date.replace('T', ' ') : '미신청';
+            const reqR2 = item.reqR2Date ? item.reqR2Date.replace('T', ' ') : '미신청';
 
             const card = document.createElement('div');
             card.className = 'accordion-card';
@@ -582,7 +304,13 @@
                 </div>
 
                 <div class="card-detail" id="cardDetail-${index}">
-                    <div style="font-size:0.85rem; color:#334155; margin-bottom:8px; display:flex; align-items:center; flex-wrap:wrap;">
+                    <div class="req-box">
+                        <div style="font-weight:bold; margin-bottom:4px;">📩 대표님 실시간 신청 희망일시 & 요청사항 (${item.lastModified || '최초'})</div>
+                        <div>• <strong>1회차 희망:</strong> ${reqR1} | <strong>2회차 희망:</strong> ${reqR2}</div>
+                        <div>• <strong>요청사항/고민:</strong> ${traits || '작성된 요청사항 없음'}</div>
+                    </div>
+
+                    <div style="font-size:0.85rem; color:#334155; margin-bottom:8px; display:flex; align-items:center;">
                         📍 <strong>주소:</strong> &nbsp;${item.address}
                         <a href="${naverMapUrl}" target="_blank" class="map-link-inline">📍 네이버 지도 길찾기</a>
                     </div>
@@ -596,18 +324,13 @@
                                 <option value="완료" ${docStatus === '완료' ? 'selected' : ''}>상태: 수집완료</option>
                             </select>
                         </div>
-                        <input type="text" id="field-docMemo-${index}" placeholder="예: 사진, 로고 완료 / 기존 홍보물 대기중..." value="${docMemo}" style="width:100%; font-size:0.85rem; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
-                    </div>
-
-                    <div class="traits-input-box">
-                        <label>💡 기업 특성 및 사전 참고사항 (성향/주력제품/유의사항)</label>
-                        <input type="text" id="field-traits-${index}" placeholder="예: 대표님 소통 스타일, 주력 디저트 라인업, 브랜드 리뉴얼 니즈 강함 등..." value="${traits}" style="width:100%; font-size:0.85rem; padding:8px; border:1px solid #fcd34d; border-radius:6px; background:#ffffff;">
+                        <input type="text" id="field-docMemo-${index}" placeholder="예: 사진, 로고 완료 / 기존 홍보물 대기중..." value="${docMemo}">
                     </div>
 
                     <div class="round-container">
                         <div class="round-box r1">
                             <h4>
-                                <span>1회차 컨설팅</span>
+                                <span>1회차 확정 일정</span>
                                 <select id="field-r1Status-${index}" style="font-weight:bold; color:${getStatusColor(item.r1Status)}">
                                     <option value="예정" ${item.r1Status === '예정' ? 'selected' : ''}>상태: 예정</option>
                                     <option value="진행" ${item.r1Status === '진행' ? 'selected' : ''}>상태: 진행</option>
@@ -616,7 +339,7 @@
                                 </select>
                             </h4>
                             <div class="form-group">
-                                <label>컨설팅 일시</label>
+                                <label>1회차 확정 일시</label>
                                 <input type="datetime-local" id="field-r1Date-${index}" value="${item.r1Date}">
                             </div>
                             <div class="form-group">
@@ -634,7 +357,7 @@
 
                         <div class="round-box r2">
                             <h4>
-                                <span>2회차 컨설팅 (연계)</span>
+                                <span>2회차 확정 일정 (연계)</span>
                                 <select id="field-r2Status-${index}" style="font-weight:bold; color:${getStatusColor(item.r2Status)}">
                                     <option value="예정" ${item.r2Status === '예정' ? 'selected' : ''}>상태: 예정</option>
                                     <option value="진행" ${item.r2Status === '진행' ? 'selected' : ''}>상태: 진행</option>
@@ -643,7 +366,7 @@
                                 </select>
                             </h4>
                             <div class="form-group">
-                                <label>컨설팅 일시</label>
+                                <label>2회차 확정 일시</label>
                                 <input type="datetime-local" id="field-r2Date-${index}" value="${item.r2Date}">
                             </div>
                             <div class="form-group">
@@ -660,42 +383,14 @@
                         </div>
                     </div>
 
-                    <button class="btn-item-save" onclick="saveItemData(${index})">💾 [${item.name}] 수정사항 저장하기</button>
+                    <button class="btn-item-save" onclick="saveItemData(${index})">💾 [${item.name}] 확정 일정 저장하기</button>
                 </div>
             `;
             container.appendChild(card);
         });
-    }
+    };
 
-    function saveItemData(index) {
-        pushHistory(`${companies[index].name} 개별 저장`);
-
-        companies[index].docStatus = document.getElementById(`field-docStatus-${index}`).value;
-        companies[index].docMemo = document.getElementById(`field-docMemo-${index}`).value;
-        companies[index].traits = document.getElementById(`field-traits-${index}`).value;
-
-        companies[index].r1Status = document.getElementById(`field-r1Status-${index}`).value;
-        companies[index].r1Date = document.getElementById(`field-r1Date-${index}`).value;
-        companies[index].r1Manager1 = document.getElementById(`field-r1Manager1-${index}`).value;
-        companies[index].r1Manager2 = document.getElementById(`field-r1Manager2-${index}`).value;
-        companies[index].r1Content = document.getElementById(`field-r1Content-${index}`).value;
-
-        companies[index].r2Status = document.getElementById(`field-r2Status-${index}`).value;
-        companies[index].r2Date = document.getElementById(`field-r2Date-${index}`).value;
-        companies[index].r2Manager1 = document.getElementById(`field-r2Manager1-${index}`).value;
-        companies[index].r2Manager2 = document.getElementById(`field-r2Manager2-${index}`).value;
-        companies[index].r2Content = document.getElementById(`field-r2Content-${index}`).value;
-
-        autoSave();
-        renderCards();
-        updateStats();
-        renderCalendar();
-
-        toggleCardDetail(index);
-        alert(`[${currentWorker}] 작업자명으로 [${companies[index].name}] 정보가 성공적으로 저장되었습니다.`);
-    }
-
-    function toggleCardDetail(index) {
+    window.toggleCardDetail = function(index) {
         const detail = document.getElementById(`cardDetail-${index}`);
         const btn = document.getElementById(`toggleBtn-${index}`);
         if (detail.classList.contains('open')) {
@@ -705,7 +400,7 @@
             detail.classList.add('open');
             btn.innerText = '접기 ∧';
         }
-    }
+    };
 
     function getDocStatusColor(status) {
         if (status === '완료') return '#16a34a';
@@ -720,71 +415,22 @@
         return '#64748b';
     }
 
-    function autoSave() {
-        localStorage.setItem('suncheon_consulting_v13', JSON.stringify(companies));
-        localStorage.setItem('suncheon_history_stack_v13', JSON.stringify(historyStack));
-    }
-
-    function saveAllData() {
-        pushHistory(`전체 저장 처리`);
-        companies.forEach((item, index) => {
-            const docS = document.getElementById(`field-docStatus-${index}`);
-            if(docS) {
-                companies[index].docStatus = docS.value;
-                companies[index].docMemo = document.getElementById(`field-docMemo-${index}`).value;
-                companies[index].traits = document.getElementById(`field-traits-${index}`).value;
-                companies[index].r1Status = document.getElementById(`field-r1Status-${index}`).value;
-                companies[index].r1Date = document.getElementById(`field-r1Date-${index}`).value;
-                companies[index].r1Manager1 = document.getElementById(`field-r1Manager1-${index}`).value;
-                companies[index].r1Manager2 = document.getElementById(`field-r1Manager2-${index}`).value;
-                companies[index].r1Content = document.getElementById(`field-r1Content-${index}`).value;
-                companies[index].r2Status = document.getElementById(`field-r2Status-${index}`).value;
-                companies[index].r2Date = document.getElementById(`field-r2Date-${index}`).value;
-                companies[index].r2Manager1 = document.getElementById(`field-r2Manager1-${index}`).value;
-                companies[index].r2Manager2 = document.getElementById(`field-r2Manager2-${index}`).value;
-                companies[index].r2Content = document.getElementById(`field-r2Content-${index}`).value;
-            }
-        });
-        autoSave();
-        renderCards();
-        updateStats();
-        renderCalendar();
-        alert(`[${currentWorker}] 작업자명의 전체 데이터가 성공적으로 저장되었습니다!`);
-    }
-
-    function updateStats() {
+    window.updateStats = function() {
         document.getElementById('stat-total').innerText = companies.length;
         const collectedCount = companies.filter(c => c.docStatus === '완료').length;
         document.getElementById('stat-collected').innerText = `${collectedCount}/${companies.length}`;
         document.getElementById('stat-r1-done').innerText = companies.filter(c => c.r1Status === "완료").length;
         document.getElementById('stat-r2-done').innerText = companies.filter(c => c.r2Status === "완료").length;
-    }
+    };
 
-    function filterData() {
-        const search = document.getElementById('searchInput').value.toLowerCase();
-        const category = document.getElementById('categoryFilter').value;
-
-        const cards = document.querySelectorAll('.accordion-card');
-        companies.forEach((item, index) => {
-            const matchesSearch = item.name.toLowerCase().includes(search) || item.owner.toLowerCase().includes(search);
-            const matchesCategory = category === "" || item.category === category;
-
-            if (matchesSearch && matchesCategory) {
-                cards[index].style.display = "";
-            } else {
-                cards[index].style.display = "none";
-            }
-        });
-    }
-
-    function switchTab(tabId, btn) {
+    window.switchTab = function(tabId, btn) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
         btn.classList.add('active');
-    }
+    };
 
-    function renderCalendar() {
+    window.renderCalendar = function() {
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
 
@@ -794,16 +440,11 @@
         const lastDate = new Date(year, month + 1, 0).getDate();
 
         const pcGrid = document.getElementById('calendarDays');
-        const mobileList = document.getElementById('mobileScheduleList');
-        
         pcGrid.innerHTML = '';
-        mobileList.innerHTML = '';
 
         for (let i = 0; i < firstDay; i++) {
             pcGrid.appendChild(document.createElement('div'));
         }
-
-        let hasMobileEvents = false;
 
         for (let date = 1; date <= lastDate; date++) {
             const dayDiv = document.createElement('div');
@@ -845,7 +486,6 @@
 
                 const card = document.createElement('div');
                 card.className = `event-card status-${status}`;
-                card.onclick = () => openModal(comp, ev.type);
                 card.innerHTML = `
                     <div><span class="time">${time}</span> <span class="company">${comp.name}</span> (${ev.type}회)</div>
                     <div class="topic">📌 ${content || '주제 미정'}</div>
@@ -854,184 +494,19 @@
             });
 
             pcGrid.appendChild(dayDiv);
-
-            if (dayEvents.length > 0) {
-                hasMobileEvents = true;
-                const mGroup = document.createElement('div');
-                mGroup.className = 'mobile-date-group';
-                
-                let eventsHtml = '';
-                dayEvents.forEach(ev => {
-                    const time = ev.date.split('T')[1] || '';
-                    const comp = ev.comp;
-                    const status = ev.type === 1 ? comp.r1Status : comp.r2Status;
-                    const content = ev.type === 1 ? comp.r1Content : comp.r2Content;
-
-                    eventsHtml += `
-                        <div class="event-card status-${status}" onclick="openModalById(${comp.id}, ${ev.type})" style="padding:10px; margin-top:6px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span class="time" style="font-size:0.85rem;">⏰ ${time}</span>
-                                <span style="background:${getStatusColor(status)}; color:white; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:0.7rem;">${status}</span>
-                            </div>
-                            <div style="font-size:0.95rem; font-weight:bold; margin-top:3px; color:var(--primary-color);">${comp.name} (${ev.type}회차 컨설팅)</div>
-                            <div style="font-size:0.82rem; color:#334155; margin-top:4px;">📌 ${content || '등록된 수행 내용 없음'}</div>
-                        </div>
-                    `;
-                });
-
-                mGroup.innerHTML = `
-                    <div class="mobile-date-header">
-                        <span>📅 ${month + 1}월 ${date}일 (${['일','월','화','수','목','금','토'][dayOfWeek]})</span>
-                        <span style="font-size:0.75rem; color:var(--holiday-color);">${koreanHolidays[dateStr] || ''}</span>
-                    </div>
-                    ${eventsHtml}
-                `;
-                mobileList.appendChild(mGroup);
-            }
         }
+    };
 
-        if (!hasMobileEvents) {
-            mobileList.innerHTML = `<div style="padding:20px; text-align:center; color:#94a3b8; font-size:0.85rem;">이번 달에 등록된 컨설팅 일정이 없습니다.</div>`;
-        }
-    }
-
-    function changeMonth(delta) {
+    window.changeMonth = function(delta) {
         currentDate.setMonth(currentDate.getMonth() + delta);
         renderCalendar();
-    }
+    };
 
-    function openModalById(id, round) {
-        const comp = companies.find(c => c.id === id);
-        if (comp) openModal(comp, round);
-    }
-
-    function openModal(comp, currentRound) {
-        const modal = document.getElementById('infoModal');
-
-        const status = currentRound === 1 ? comp.r1Status : comp.r2Status;
-        const mgr1 = currentRound === 1 ? comp.r1Manager1 : comp.r2Manager1;
-        const mgr2 = currentRound === 1 ? comp.r1Manager2 : comp.r2Manager2;
-        const managersText = [mgr1, mgr2].filter(Boolean).join(', ') || '담당자 미정';
-
-        const content = currentRound === 1 ? comp.r1Content : comp.r2Content;
-        const dateTime = currentRound === 1 ? comp.r1Date : comp.r2Date;
-
-        const encodedAddr = encodeURIComponent(comp.address);
-        const naverMapUrl = `https://m.map.naver.com/search2/search.naver?query=${encodedAddr}`;
-        const statusBg = getStatusColor(status);
-
-        document.getElementById('modalBody').innerHTML = `
-            <div class="modal-popup-header">
-                <div>
-                    <h2>${comp.name}</h2>
-                    <span style="font-size:0.85rem; color:#64748b; font-weight:600;">${currentRound}회차 컨설팅 일정</span>
-                </div>
-                <span class="modal-status-badge" style="background:${statusBg};">${status}</span>
-            </div>
-
-            <div class="modal-topic-card">
-                <div class="modal-topic-title">📌 이번 회차 컨설팅 수행 주제 & 과제</div>
-                <div class="modal-topic-body">${content || '등록된 수행 내용이 없습니다.'}</div>
-                <div style="font-size:0.82rem; color:#64748b; margin-top:8px;">
-                    ⏰ <strong>일시:</strong> ${dateTime ? dateTime.replace('T', ' ') : '일정 미정'} | 👥 <strong>담당:</strong> ${managersText}
-                </div>
-            </div>
-
-            ${comp.traits ? `
-            <div class="modal-traits-card">
-                <strong>💡 기업 특성 및 사전 참고사항:</strong><br>
-                ${comp.traits}
-            </div>` : ''}
-
-            <div class="modal-history-section">
-                <div class="modal-section-title">🔄 1회차 ↔ 2회차 연계 컨설팅 히스토리</div>
-                <div class="history-timeline">
-                    <div class="history-step-item ${currentRound === 1 ? 'active' : ''}">
-                        <strong>[1회차]</strong> ${comp.r1Date ? comp.r1Date.split('T')[0] : '미정'} (${comp.r1Status})<br>
-                        <span style="color:#475569;">${comp.r1Content || '내용 없음'}</span>
-                    </div>
-                    <div class="history-step-item ${currentRound === 2 ? 'active' : ''}">
-                        <strong>[2회차]</strong> ${comp.r2Date ? comp.r2Date.split('T')[0] : '미정'} (${comp.r2Status})<br>
-                        <span style="color:#475569;">${comp.r2Content || '내용 없음'}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-contact-card">
-                <div class="contact-row">
-                    <span><strong>대표자:</strong> ${comp.owner}</span>
-                    <a href="tel:${comp.phone}" class="contact-phone-btn">📞 ${comp.phone} 전화걸기</a>
-                </div>
-                <div style="font-size:0.88rem; color:#334155; margin-top:6px; display:flex; align-items:center; justify-content:space-between;">
-                    <span><strong>주소:</strong> ${comp.address}</span>
-                    <a href="${naverMapUrl}" target="_blank" class="map-link-inline">📍 길찾기</a>
-                </div>
-            </div>
-        `;
-
-        modal.style.display = 'flex';
-    }
-
-    function openHistoryModal() {
-        const modal = document.getElementById('historyModal');
-        const container = document.getElementById('historyListContainer');
-        container.innerHTML = '';
-
-        if (historyStack.length === 0) {
-            container.innerHTML = `<div style="padding:15px; text-align:center; color:#94a3b8;">기록된 변경 이력이 없습니다.</div>`;
-        } else {
-            historyStack.forEach((hist, idx) => {
-                const item = document.createElement('div');
-                item.className = 'history-item';
-                item.innerHTML = `
-                    <div>
-                        <strong>${hist.desc}</strong><br>
-                        <small style="color:#64748b;">일시: ${hist.timestamp}</small>
-                    </div>
-                    <div class="history-btns">
-                        <button class="btn btn-secondary" style="padding:4px 8px; font-size:0.72rem; width:auto;" onclick="restoreHistory(${idx})">복원</button>
-                        <button class="btn-del-hist" onclick="deleteHistoryItem(${idx})">삭제</button>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        modal.style.display = 'flex';
-    }
-
-    function deleteHistoryItem(idx) {
-        if (confirm("이 히스토리 항목을 삭제하시겠습니까?")) {
-            historyStack.splice(idx, 1);
-            autoSave();
-            openHistoryModal();
-        }
-    }
-
-    function clearAllHistory() {
-        if (confirm("모든 히스토리 내역을 비우시겠습니까?")) {
-            historyStack = [];
-            autoSave();
-            openHistoryModal();
-        }
-    }
-
-    function restoreHistory(idx) {
-        if (confirm(`'${historyStack[idx].desc}' 시점으로 데이터를 되돌리시겠습니까?`)) {
-            companies = JSON.parse(JSON.stringify(historyStack[idx].data));
-            autoSave();
-            init();
-            closeModal('historyModal');
-            alert("데이터가 성공적으로 복원되었습니다.");
-        }
-    }
-
-    function closeModal(modalId) {
-        document.getElementById(modalId).style.display = 'none';
-    }
-
-    window.onload = init;
+    window.onload = function() {
+        renderCards();
+        updateStats();
+        renderCalendar();
+    };
 </script>
-
 </body>
 </html>
