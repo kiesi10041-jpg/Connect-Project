@@ -58,7 +58,7 @@
         .calendar-day.sun .date-num { color: var(--holiday-color); }
         .calendar-day.sat .date-num { color: var(--saturday-color); }
 
-        .event-card { background: #ffffff; padding: 5px 7px; border-radius: 4px; font-size: 0.72rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #cbd5e1; border-left-width: 4px; flex-shrink: 0; }
+        .event-card { background: #ffffff; padding: 5px 7px; border-radius: 4px; font-size: 0.72rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #cbd5e1; border-left-width: 4px; flex-shrink: 0; cursor: pointer; }
         .event-card.status-예정 { border-left-color: var(--status-planned); background: #f0f9ff; }
         .event-card.status-진행 { border-left-color: var(--status-progress); background: #fffdf5; }
         .event-card.status-완료 { border-left-color: var(--status-done); background: #f0fdf4; }
@@ -67,9 +67,36 @@
         .event-card .company { font-weight: 700; color: #0f172a; }
         .event-card .topic { font-size: 0.68rem; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+        /* Modal Overlay & Cards */
+        .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(3px); }
+        .modal-card { background: white; width: 100%; max-width: 520px; border-radius: 16px; padding: 22px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-close { position: absolute; top: 18px; right: 20px; font-size: 1.4rem; cursor: pointer; color: #94a3b8; font-weight: bold; }
+        
+        .modal-popup-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 15px; }
+        .modal-popup-header h2 { font-size: 1.3rem; color: var(--primary-color); font-weight: 800; }
+        .modal-status-badge { padding: 4px 12px; border-radius: 20px; color: white; font-weight: bold; font-size: 0.82rem; }
+
+        .modal-topic-card { background: #f0f9ff; border-left: 4px solid var(--secondary-color); padding: 14px; border-radius: 0 8px 8px 0; margin-bottom: 14px; }
+        .modal-topic-title { font-size: 0.78rem; font-weight: 800; color: var(--secondary-color); text-transform: uppercase; }
+        .modal-topic-body { font-size: 1.0rem; font-weight: 700; color: #0f172a; margin-top: 4px; line-height: 1.4; }
+
+        .modal-traits-card { background: #fffbebf8; border-left: 4px solid #f59e0b; padding: 12px; border-radius: 0 8px 8px 0; margin-bottom: 14px; font-size: 0.88rem; color: #78350f; }
+
+        .modal-history-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+        .modal-section-title { font-size: 0.82rem; font-weight: 800; color: var(--primary-color); margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
+        
+        .history-timeline { display: flex; flex-direction: column; gap: 8px; }
+        .history-step-item { background: white; padding: 10px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.85rem; }
+        .history-step-item.active { border-color: var(--secondary-color); background: #f0f7ff; }
+
+        .modal-contact-card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+        .contact-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.92rem; }
+        .contact-phone-btn { display: inline-flex; align-items: center; gap: 4px; color: var(--secondary-color); text-decoration: none; font-weight: bold; background: #e0f2fe; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; }
+        .map-link-inline { display: inline-flex; align-items: center; gap: 3px; color: #15803d; text-decoration: none; font-weight: bold; font-size: 0.78rem; background: #dcfce7; padding: 2px 8px; border-radius: 4px; }
+
         @media print {
             body { padding: 0; background: white; }
-            .btn-print, .btn-nav { display: none !important; }
+            .btn-print, .btn-nav, .modal-overlay { display: none !important; }
             .calendar-container { border: none; box-shadow: none; }
         }
     </style>
@@ -111,6 +138,14 @@
     </div>
 </div>
 
+<!-- Modal Popup -->
+<div class="modal-overlay" id="infoModal">
+    <div class="modal-card">
+        <span class="modal-close" onclick="closeModal('infoModal')">&times;</span>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
 <script>
     const firebaseConfig = {
         apiKey: "AIzaSyCcNNXDqZJBQVaysHYYyh0J7s5hn2P3DHI",
@@ -132,16 +167,16 @@
     };
 
     const initialCompanies = [
-        { id: 1, name: "만대재", r1Date: "", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
-        { id: 2, name: "스테잇", r1Date: "2026-08-13T10:00", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
-        { id: 3, name: "동동베이킹랩", r1Date: "2026-08-17T14:00", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
-        { id: 4, name: "촌스랩", r1Date: "", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
-        { id: 5, name: "고소롱", r1Date: "", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
-        { id: 6, name: "노무사사무소 미르", r1Date: "2026-08-07T10:30", r1Content: "마케팅 과제 확정 (블로그/배너/자동문자)", r1Status: "완료", r2Date: "", r2Status: "예정" },
-        { id: 7, name: "멜리본", r1Date: "", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
-        { id: 8, name: "세허니", r1Date: "2026-08-13T10:00", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
-        { id: 9, name: "곡물공간", r1Date: "", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
-        { id: 10, name: "뉘즈", r1Date: "2026-08-10T16:00", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" }
+        { id: 1, name: "만대재", owner: "장민영", phone: "010-4924-1573", address: "전남 순천시 순천만길 530, 1층", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 2, name: "스테잇", owner: "백민경", phone: "010-9243-6558", address: "전남 순천시 왕지3길 18-28", traits: "", r1Date: "2026-08-13T10:00", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 3, name: "동동베이킹랩", owner: "최동문", phone: "010-3104-0215", address: "전남 순천시 장명로 13, 다동 1층", traits: "", r1Date: "2026-08-17T14:00", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 4, name: "촌스랩", owner: "오태민", phone: "010-5842-0277", address: "전남 순천시 중앙로 255, F1동 4층", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 5, name: "고소롱", owner: "장진수", phone: "010-2716-5614", address: "전남 순천시 연향1로 40, 상가동 108호", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 6, name: "노무사사무소 미르", owner: "조수린", phone: "010-2753-1858", address: "전남 순천시 해룡면 지봉로 277, 1층", traits: "대표자 나이 대비 10년 경력을 가지고 있으며, 젊은층인 만큼 자신의 분야의 다양한 확장성을 생각하고있음", r1Date: "2026-08-07T10:30", r1Manager1: "심훈 팀장", r1Manager2: "윤엘림 사원", r1Content: "마케팅 과제 확정 1. 브랜드 블로그 스킨 리뉴얼 및 썸네일(4종) 2. 제미나이 블로그 가이드 3. 순광맘 배너·웹포스터 4. 자동문자 프로그램", r1Status: "완료", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 7, name: "멜리본", owner: "서성호", phone: "010-4446-0064", address: "전남 순천시 팔마3길 38", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 8, name: "세허니", owner: "권현정", phone: "010-8502-5508", address: "전남 순천시 덕월길 112", traits: "", r1Date: "2026-08-13T10:00", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 9, name: "곡물공간", owner: "정세헌", phone: "010-7733-9220", address: "전남 순천시 저전길 18, 2층", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
+        { id: 10, name: "뉘즈", owner: "김수은", phone: "010-9208-3713", address: "전남 순천시 역전길 34, 2층 19호", traits: "", r1Date: "2026-08-10T16:00", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" }
     ];
 
     let companies = initialCompanies;
@@ -158,6 +193,84 @@
         updateStats();
         renderCalendar();
     });
+
+    function getStatusColor(status) {
+        if (status === '예정') return '#0284c7';
+        if (status === '진행') return '#d97706';
+        if (status === '완료') return '#16a34a';
+        return '#64748b';
+    }
+
+    function openModal(comp, currentRound) {
+        const modal = document.getElementById('infoModal');
+
+        const status = currentRound === 1 ? comp.r1Status : comp.r2Status;
+        const mgr1 = currentRound === 1 ? comp.r1Manager1 : comp.r2Manager1;
+        const mgr2 = currentRound === 1 ? comp.r1Manager2 : comp.r2Manager2;
+        const managersText = [mgr1, mgr2].filter(Boolean).join(', ') || '담당자 미정';
+
+        const content = currentRound === 1 ? comp.r1Content : comp.r2Content;
+        const dateTime = currentRound === 1 ? comp.r1Date : comp.r2Date;
+
+        const encodedAddr = encodeURIComponent(comp.address || '');
+        const naverMapUrl = `https://m.map.naver.com/search2/search.naver?query=${encodedAddr}`;
+        const statusBg = getStatusColor(status);
+
+        document.getElementById('modalBody').innerHTML = `
+            <div class="modal-popup-header">
+                <div>
+                    <h2>${comp.name}</h2>
+                    <span style="font-size:0.85rem; color:#64748b; font-weight:600;">${currentRound}회차 컨설팅 일정</span>
+                </div>
+                <span class="modal-status-badge" style="background:${statusBg};">${status}</span>
+            </div>
+
+            <div class="modal-topic-card">
+                <div class="modal-topic-title">📌 이번 회차 컨설팅 수행 주제 & 과제</div>
+                <div class="modal-topic-body">${content || '등록된 수행 내용이 없습니다.'}</div>
+                <div style="font-size:0.82rem; color:#64748b; margin-top:8px;">
+                    ⏰ <strong>일시:</strong> ${dateTime ? dateTime.replace('T', ' ') : '일정 미정'} | 👥 <strong>담당:</strong> ${managersText}
+                </div>
+            </div>
+
+            ${comp.traits ? `
+            <div class="modal-traits-card">
+                <strong>💡 기업 특성 및 사전 참고사항:</strong><br>
+                ${comp.traits}
+            </div>` : ''}
+
+            <div class="modal-history-section">
+                <div class="modal-section-title">🔄 1회차 ↔ 2회차 연계 컨설팅 히스토리</div>
+                <div class="history-timeline">
+                    <div class="history-step-item ${currentRound === 1 ? 'active' : ''}">
+                        <strong>[1회차]</strong> ${comp.r1Date ? comp.r1Date.split('T')[0] : '미정'} (${comp.r1Status})<br>
+                        <span style="color:#475569;">${comp.r1Content || '내용 없음'}</span>
+                    </div>
+                    <div class="history-step-item ${currentRound === 2 ? 'active' : ''}">
+                        <strong>[2회차]</strong> ${comp.r2Date ? comp.r2Date.split('T')[0] : '미정'} (${comp.r2Status})<br>
+                        <span style="color:#475569;">${comp.r2Content || '내용 없음'}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-contact-card">
+                <div class="contact-row">
+                    <span><strong>대표자:</strong> ${comp.owner}</span>
+                    <a href="tel:${comp.phone}" class="contact-phone-btn">📞 ${comp.phone} 전화걸기</a>
+                </div>
+                <div style="font-size:0.88rem; color:#334155; margin-top:6px; display:flex; align-items:center; justify-content:space-between;">
+                    <span><strong>주소:</strong> ${comp.address || '정보 없음'}</span>
+                    <a href="${naverMapUrl}" target="_blank" class="map-link-inline">📍 길찾기</a>
+                </div>
+            </div>
+        `;
+
+        modal.style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
 
     function updateStats() {
         document.getElementById('stat-total').innerText = companies.length;
@@ -222,6 +335,7 @@
 
                 const card = document.createElement('div');
                 card.className = `event-card status-${status}`;
+                card.onclick = () => openModal(comp, ev.type);
                 card.innerHTML = `
                     <div><span class="time">${time}</span> <span class="company">${comp.name}</span> (${ev.type}회)</div>
                     <div class="topic">📌 ${content || '주제 미정'}</div>
