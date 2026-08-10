@@ -51,10 +51,12 @@
         .worker-box label { font-size: 0.8rem; font-weight: bold; color: #0369a1; white-space: nowrap; }
         .worker-box input { padding: 5px 8px; font-size: 0.82rem; width: 110px; border: 1px solid #7dd3fc; }
 
-        .btn-action-group { display: flex; gap: 8px; }
+        .btn-action-group { display: flex; gap: 6px; flex-wrap: wrap; }
         .btn { padding: 9px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.2s; }
         .btn-success { background: var(--status-done); color: white; }
         .btn-print { background: #0f172a; color: white; }
+        .btn-export { background: #4338ca; color: white; }
+        .btn-import { background: #0d9488; color: white; }
         .btn-secondary { background: #475569; color: white; }
         
         .btn-item-save { background: var(--secondary-color); color: white; padding: 10px 16px; font-weight: bold; font-size: 0.85rem; border: none; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 12px; }
@@ -116,7 +118,6 @@
         .card-detail { display: none; padding: 15px; background: #f8fafc; border-top: 1px solid var(--border-color); }
         .card-detail.open { display: block; }
 
-        /* 소형 네이버 길찾기 링크 */
         .map-link-inline { display: inline-flex; align-items: center; gap: 3px; color: #15803d; text-decoration: none; font-weight: bold; font-size: 0.78rem; background: #dcfce7; padding: 2px 8px; border-radius: 4px; border: 1px solid #bbf7d0; margin-left: 6px; }
         .map-link-inline:hover { background: #bbf7d0; }
 
@@ -125,7 +126,6 @@
         .docs-input-header label { font-size: 0.8rem; font-weight: bold; color: var(--primary-color); }
         .docs-status-select { font-size: 0.78rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
 
-        /* 기업 특성 / 성향 박스 */
         .traits-input-box { background: #fffbebf8; padding: 12px; border-radius: 8px; border: 1px solid #fef3c7; margin-top: 10px; }
         .traits-input-box label { font-size: 0.8rem; font-weight: bold; color: #b45309; display: block; margin-bottom: 4px; }
 
@@ -196,8 +196,6 @@
             .company-cards-list {
                 gap: 0;
             }
-            
-            /* 인쇄용 공문서/보고서 형태 레이아웃 */
             .accordion-card {
                 border: none;
                 border-bottom: 2px solid #000;
@@ -275,7 +273,6 @@
 
         .print-report-header { display: none; }
 
-        /* Media Queries */
         @media (max-width: 768px) {
             body { padding: 10px; }
             .stats-container { margin-top: 8px; }
@@ -357,6 +354,9 @@
         </div>
 
         <div class="btn-action-group">
+            <button class="btn btn-export" onclick="exportDataJSON()">📤 데이터 내보내기</button>
+            <button class="btn btn-import" onclick="document.getElementById('importFile').click()">📥 데이터 불러오기</button>
+            <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importDataJSON(event)">
             <button class="btn btn-print" onclick="window.print()">🜂 현황 보고서 인쇄 (A4)</button>
             <button class="btn btn-success" onclick="saveAllData()">💾 전체 저장하기</button>
         </div>
@@ -386,21 +386,15 @@
                 <div class="calendar-day-header">금</div>
                 <div class="calendar-day-header sat">토</div>
             </div>
-            <div class="calendar-grid" id="calendarDays">
-                <!-- PC Calendar JS -->
-            </div>
+            <div class="calendar-grid" id="calendarDays"></div>
 
-            <div class="mobile-schedule-list" id="mobileScheduleList">
-                <!-- Mobile Timeline JS -->
-            </div>
+            <div class="mobile-schedule-list" id="mobileScheduleList"></div>
         </div>
     </div>
 
     <!-- Tab 2: Company Cards List -->
     <div id="cards-view" class="tab-content">
-        <div class="company-cards-list" id="companyCardsContainer">
-            <!-- JS Cards Rendering -->
-        </div>
+        <div class="company-cards-list" id="companyCardsContainer"></div>
     </div>
 </div>
 
@@ -408,9 +402,7 @@
 <div class="modal-overlay" id="infoModal">
     <div class="modal-card">
         <span class="modal-close" onclick="closeModal('infoModal')">&times;</span>
-        <div class="modal-body" id="modalBody">
-            <!-- Dynamic Content -->
-        </div>
+        <div class="modal-body" id="modalBody"></div>
     </div>
 </div>
 
@@ -423,9 +415,7 @@
             <button onclick="clearAllHistory()" style="background:#ef4444; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold; cursor:pointer;">🗑️ 전체 비우기</button>
         </div>
         <p style="font-size:0.8rem; color:#64748b;">최대 30개까지 자동 관리됩니다. 필요 없는 기록은 [삭제]할 수 있습니다.</p>
-        <div class="history-list" id="historyListContainer">
-            <!-- History JS -->
-        </div>
+        <div class="history-list" id="historyListContainer"></div>
     </div>
 </div>
 
@@ -438,7 +428,6 @@
         "2026-10-09": "한글날", "2026-12-25": "성탄절"
     };
 
-    // 기업 특성/성향 항목(traits)이 추가된 데이터 구조
     const initialCompanies = [
         { id: 1, name: "만대재", owner: "장민영", phone: "010-4924-1573", address: "전남 순천시 순천만길 530, 1층", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
         { id: 2, name: "스테잇", owner: "백민경", phone: "010-9243-6558", address: "전남 순천시 왕지3길 18-28", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정" },
@@ -469,6 +458,52 @@
         renderCalendar();
     }
 
+    /* 📤 데이터 내보내기 (JSON 파일 다운로드) */
+    function exportDataJSON() {
+        const exportObj = {
+            exportDate: new Date().toLocaleString('ko-KR'),
+            worker: currentWorker,
+            companies: companies,
+            historyStack: historyStack
+        };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
+        const downloadAnchor = document.createElement('a');
+        const fileName = `suncheon_consulting_backup_${new Date().toISOString().slice(0,10)}.json`;
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", fileName);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+        alert(`최신 데이터가 [${fileName}] 파일로 다운로드되었습니다.`);
+    }
+
+    /* 📥 데이터 불러오기 (JSON 파일 선택) */
+    function importDataJSON(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (importedData && importedData.companies) {
+                    if (confirm(`[${importedData.exportDate || '불러온 데이터'}]의 최신 데이터로 업데이트하시겠습니까?`)) {
+                        companies = importedData.companies;
+                        if (importedData.historyStack) historyStack = importedData.historyStack;
+                        autoSave();
+                        init();
+                        alert("데이터 불러오기 및 최신 상태 적용이 성공적으로 완료되었습니다!");
+                    }
+                } else {
+                    alert("올바르지 않은 데이터 파일 형식입니다.");
+                }
+            } catch (err) {
+                alert("파일을 읽는 도중 오류가 발생했습니다: " + err.message);
+            }
+        };
+        reader.readAsText(file);
+    }
+
     function saveWorkerName() {
         currentWorker = document.getElementById('currentWorkerName').value.trim() || '담당자';
         localStorage.setItem('suncheon_worker_name', currentWorker);
@@ -477,7 +512,6 @@
     function handleHeaderClick() {
         headerClickCount++;
         clearTimeout(clickTimer);
-        
         if (headerClickCount >= 3) {
             headerClickCount = 0;
             promptAdminPassword();
@@ -548,13 +582,11 @@
                 </div>
 
                 <div class="card-detail" id="cardDetail-${index}">
-                    <!-- 주소 옆 소형 길찾기 링크 배치 -->
                     <div style="font-size:0.85rem; color:#334155; margin-bottom:8px; display:flex; align-items:center; flex-wrap:wrap;">
                         📍 <strong>주소:</strong> &nbsp;${item.address}
                         <a href="${naverMapUrl}" target="_blank" class="map-link-inline">📍 네이버 지도 길찾기</a>
                     </div>
                     
-                    <!-- 기초자료 수집 현황 -->
                     <div class="docs-input-box">
                         <div class="docs-input-header">
                             <label>📁 기초자료 수집 현황 및 메모</label>
@@ -567,14 +599,12 @@
                         <input type="text" id="field-docMemo-${index}" placeholder="예: 사진, 로고 완료 / 기존 홍보물 대기중..." value="${docMemo}" style="width:100%; font-size:0.85rem; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
                     </div>
 
-                    <!-- 💡 기업 특성 / 성향 사전 메모 박스 -->
                     <div class="traits-input-box">
                         <label>💡 기업 특성 및 사전 참고사항 (성향/주력제품/유의사항)</label>
                         <input type="text" id="field-traits-${index}" placeholder="예: 대표님 소통 스타일, 주력 디저트 라인업, 브랜드 리뉴얼 니즈 강함 등..." value="${traits}" style="width:100%; font-size:0.85rem; padding:8px; border:1px solid #fcd34d; border-radius:6px; background:#ffffff;">
                     </div>
 
                     <div class="round-container">
-                        <!-- 1회차 -->
                         <div class="round-box r1">
                             <h4>
                                 <span>1회차 컨설팅</span>
@@ -602,7 +632,6 @@
                             </div>
                         </div>
 
-                        <!-- 2회차 -->
                         <div class="round-box r2">
                             <h4>
                                 <span>2회차 컨설팅 (연계)</span>
@@ -693,6 +722,7 @@
 
     function autoSave() {
         localStorage.setItem('suncheon_consulting_v13', JSON.stringify(companies));
+        localStorage.setItem('suncheon_history_stack_v13', JSON.stringify(historyStack));
     }
 
     function saveAllData() {
@@ -754,7 +784,6 @@
         btn.classList.add('active');
     }
 
-    /* Render Calendar */
     function renderCalendar() {
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
@@ -876,7 +905,6 @@
         if (comp) openModal(comp, round);
     }
 
-    /* 시인성 전면 개선 모달 팝업 */
     function openModal(comp, currentRound) {
         const modal = document.getElementById('infoModal');
 
@@ -901,7 +929,6 @@
                 <span class="modal-status-badge" style="background:${statusBg};">${status}</span>
             </div>
 
-            <!-- 핵심 컨설팅 수행 주제 -->
             <div class="modal-topic-card">
                 <div class="modal-topic-title">📌 이번 회차 컨설팅 수행 주제 & 과제</div>
                 <div class="modal-topic-body">${content || '등록된 수행 내용이 없습니다.'}</div>
@@ -910,14 +937,12 @@
                 </div>
             </div>
 
-            <!-- 기업 특성 및 사전 참고사항 카드가 있을 경우 표출 -->
             ${comp.traits ? `
             <div class="modal-traits-card">
                 <strong>💡 기업 특성 및 사전 참고사항:</strong><br>
                 ${comp.traits}
             </div>` : ''}
 
-            <!-- 1회차 ↔ 2회차 연계 히스토리 -->
             <div class="modal-history-section">
                 <div class="modal-section-title">🔄 1회차 ↔ 2회차 연계 컨설팅 히스토리</div>
                 <div class="history-timeline">
@@ -932,7 +957,6 @@
                 </div>
             </div>
 
-            <!-- 대표자, 연락처, 주소 & 길찾기 소형 액션 -->
             <div class="modal-contact-card">
                 <div class="contact-row">
                     <span><strong>대표자:</strong> ${comp.owner}</span>
@@ -979,15 +1003,15 @@
     function deleteHistoryItem(idx) {
         if (confirm("이 히스토리 항목을 삭제하시겠습니까?")) {
             historyStack.splice(idx, 1);
-            localStorage.setItem('suncheon_history_stack_v13', JSON.stringify(historyStack));
+            autoSave();
             openHistoryModal();
         }
     }
 
     function clearAllHistory() {
-        if (confirm("모든 히스토리 내역을 비우시겠습니까? (이 작업은 되돌릴 수 없습니다.)")) {
+        if (confirm("모든 히스토리 내역을 비우시겠습니까?")) {
             historyStack = [];
-            localStorage.setItem('suncheon_history_stack_v13', JSON.stringify(historyStack));
+            autoSave();
             openHistoryModal();
         }
     }
