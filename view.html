@@ -27,7 +27,7 @@
             --status-hold: #64748b;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.5; padding: 15px; }
 
         .container { max-width: 1200px; margin: 0 auto; }
@@ -45,9 +45,10 @@
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
         .calendar-header h2 { font-size: 1.25rem; color: var(--primary-color); font-weight: 800; }
         
-        .btn-nav { padding: 6px 14px; background: #475569; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+        .btn-nav { padding: 8px 16px; background: #475569; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
         .btn-print { padding: 8px 16px; background: #0f172a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; margin-bottom: 15px; float: right; }
 
+        /* PC 달력 그리드 레이아웃 */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
         .calendar-day-header { text-align: center; font-weight: bold; padding: 10px 4px; background: #f1f5f9; border-radius: 6px; color: var(--primary-color); font-size: 0.85rem; }
         .calendar-day-header.sun { color: var(--holiday-color); }
@@ -58,14 +59,19 @@
         .calendar-day.sun .date-num { color: var(--holiday-color); }
         .calendar-day.sat .date-num { color: var(--saturday-color); }
 
-        .event-card { background: #ffffff; padding: 5px 7px; border-radius: 4px; font-size: 0.72rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #cbd5e1; border-left-width: 4px; flex-shrink: 0; cursor: pointer; }
+        .event-card { background: #ffffff; padding: 6px 8px; border-radius: 6px; font-size: 0.78rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #cbd5e1; border-left-width: 4px; flex-shrink: 0; cursor: pointer; }
         .event-card.status-예정 { border-left-color: var(--status-planned); background: #f0f9ff; }
         .event-card.status-진행 { border-left-color: var(--status-progress); background: #fffdf5; }
         .event-card.status-완료 { border-left-color: var(--status-done); background: #f0fdf4; }
         
         .event-card .time { font-weight: 800; color: var(--primary-color); }
         .event-card .company { font-weight: 700; color: #0f172a; }
-        .event-card .topic { font-size: 0.68rem; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .event-card .topic { font-size: 0.72rem; color: #475569; margin-top: 2px; }
+
+        /* 📱 모바일 리스트 전용 스타일 */
+        .mobile-schedule-list { display: none; flex-direction: column; gap: 12px; }
+        .mobile-date-group { background: #ffffff; border-radius: 10px; border: 1px solid var(--border-color); padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+        .mobile-date-header { font-weight: 800; font-size: 0.98rem; color: var(--primary-color); padding-bottom: 8px; border-bottom: 1.5px solid #f1f5f9; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
 
         /* Modal Overlay & Cards */
         .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(3px); }
@@ -94,10 +100,26 @@
         .contact-phone-btn { display: inline-flex; align-items: center; gap: 4px; color: var(--secondary-color); text-decoration: none; font-weight: bold; background: #e0f2fe; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; }
         .map-link-inline { display: inline-flex; align-items: center; gap: 3px; color: #15803d; text-decoration: none; font-weight: bold; font-size: 0.78rem; background: #dcfce7; padding: 2px 8px; border-radius: 4px; }
 
+        /* 📱 반응형 미디어 쿼리 (스마트폰 시인성 완벽 자동 대응) */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            header { padding: 15px; }
+            .header-title-box h1 { font-size: 1.15rem; }
+            .stats-container { width: 100%; margin-top: 5px; }
+            .stat-card { flex: 1; padding: 6px; min-width: auto; }
+            .calendar-container { padding: 12px; }
+            
+            /* 모바일에서는 찌그러지는 격자 달력 숨기고 리스트로 전환 */
+            .calendar-grid { display: none !important; }
+            .mobile-schedule-list { display: flex !important; }
+        }
+
         @media print {
             body { padding: 0; background: white; }
             .btn-print, .btn-nav, .modal-overlay { display: none !important; }
             .calendar-container { border: none; box-shadow: none; }
+            .calendar-grid { display: grid !important; }
+            .mobile-schedule-list { display: none !important; }
         }
     </style>
 </head>
@@ -125,6 +147,8 @@
             <h2 id="calendarTitle">2026년 8월</h2>
             <button class="btn-nav" onclick="changeMonth(1)">다음달 ▶</button>
         </div>
+        
+        <!-- PC 달력 그리드 -->
         <div class="calendar-grid">
             <div class="calendar-day-header sun">일</div>
             <div class="calendar-day-header">월</div>
@@ -135,6 +159,9 @@
             <div class="calendar-day-header sat">토</div>
         </div>
         <div class="calendar-grid" id="calendarDays"></div>
+
+        <!-- 📱 모바일 가독성 보장 타임라인 리스트 -->
+        <div class="mobile-schedule-list" id="mobileScheduleList"></div>
     </div>
 </div>
 
@@ -288,12 +315,17 @@
         const lastDate = new Date(year, month + 1, 0).getDate();
 
         const pcGrid = document.getElementById('calendarDays');
-        if(!pcGrid) return;
+        const mobileList = document.getElementById('mobileScheduleList');
+        
+        if(!pcGrid || !mobileList) return;
         pcGrid.innerHTML = '';
+        mobileList.innerHTML = '';
 
         for (let i = 0; i < firstDay; i++) {
             pcGrid.appendChild(document.createElement('div'));
         }
+
+        let hasMobileEvents = false;
 
         for (let date = 1; date <= lastDate; date++) {
             const dayDiv = document.createElement('div');
@@ -327,6 +359,7 @@
                 }
             });
 
+            // PC 그리드 구성
             dayEvents.forEach(ev => {
                 const time = ev.date.split('T')[1] || '';
                 const comp = ev.comp;
@@ -344,7 +377,51 @@
             });
 
             pcGrid.appendChild(dayDiv);
+
+            // 📱 모바일 가독성 카드 구성 (일정이 있는 날만 생성)
+            if (dayEvents.length > 0) {
+                hasMobileEvents = true;
+                const mGroup = document.createElement('div');
+                mGroup.className = 'mobile-date-group';
+                
+                let eventsHtml = '';
+                dayEvents.forEach(ev => {
+                    const time = ev.date.split('T')[1] || '';
+                    const comp = ev.comp;
+                    const status = ev.type === 1 ? comp.r1Status : comp.r2Status;
+                    const content = ev.type === 1 ? comp.r1Content : comp.r2Content;
+
+                    eventsHtml += `
+                        <div class="event-card status-${status}" onclick="openModalById(${comp.id}, ${ev.type})" style="padding:12px; margin-top:8px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span class="time" style="font-size:0.9rem;">⏰ ${time}</span>
+                                <span style="background:${getStatusColor(status)}; color:white; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:0.75rem;">${status}</span>
+                            </div>
+                            <div style="font-size:1.0rem; font-weight:bold; margin-top:4px; color:var(--primary-color);">${comp.name} (${ev.type}회차)</div>
+                            <div style="font-size:0.85rem; color:#475569; margin-top:4px;">📌 ${content || '주제 미정'}</div>
+                        </div>
+                    `;
+                });
+
+                mGroup.innerHTML = `
+                    <div class="mobile-date-header">
+                        <span>📅 ${month + 1}월 ${date}일 (${['일','월','화','수','목','금','토'][dayOfWeek]})</span>
+                        <span style="font-size:0.78rem; color:var(--holiday-color);">${koreanHolidays[dateStr] || ''}</span>
+                    </div>
+                    ${eventsHtml}
+                `;
+                mobileList.appendChild(mGroup);
+            }
         }
+
+        if (!hasMobileEvents) {
+            mobileList.innerHTML = `<div style="padding:30px; text-align:center; color:#94a3b8; font-size:0.9rem; background:white; border-radius:10px; border:1px solid #cbd5e1;">이번 달에는 등록된 컨설팅 일정이 없습니다.</div>`;
+        }
+    }
+
+    function openModalById(id, round) {
+        const comp = companies.find(c => c.id === id);
+        if (comp) openModal(comp, round);
     }
 
     function changeMonth(delta) {
