@@ -66,7 +66,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Calendar */
+        /* Calendar - PC */
         .calendar-container { background: var(--card-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .calendar-header h2 { font-size: 1.15rem; color: var(--primary-color); }
@@ -90,6 +90,11 @@
         .event-card .time { font-weight: 800; color: var(--primary-color); }
         .event-card .company { font-weight: 700; color: #0f172a; }
         .event-card .topic { font-size: 0.65rem; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* 📱 모바일 리스트 전용 스타일 */
+        .mobile-schedule-list { display: none; flex-direction: column; gap: 12px; }
+        .mobile-date-group { background: #ffffff; border-radius: 10px; border: 1px solid var(--border-color); padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+        .mobile-date-header { font-weight: 800; font-size: 0.98rem; color: var(--primary-color); padding-bottom: 8px; border-bottom: 1.5px solid #f1f5f9; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
 
         /* Accordion Cards */
         .company-cards-list { display: flex; flex-direction: column; gap: 12px; }
@@ -119,7 +124,7 @@
         .form-group label { font-size: 0.75rem; font-weight: 700; color: #475569; }
         .form-group input, .form-group select, .form-group textarea { font-size: 0.85rem; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; width: 100%; }
 
-        /* Modal Overlay & Card (3번 이미지 스타일 통합) */
+        /* Modal Overlay & Card */
         .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(3px); }
         .modal-card { background: white; width: 100%; max-width: 520px; border-radius: 16px; padding: 22px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); position: relative; max-height: 90vh; overflow-y: auto; }
         .modal-close { position: absolute; top: 18px; right: 20px; font-size: 1.4rem; cursor: pointer; color: #94a3b8; font-weight: bold; }
@@ -144,6 +149,20 @@
         .modal-contact-card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
         .contact-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.92rem; }
         .contact-phone-btn { display: inline-flex; align-items: center; gap: 4px; color: var(--secondary-color); text-decoration: none; font-weight: bold; background: #e0f2fe; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; }
+
+        /* 📱 스마트폰 반응형 스타일 */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            header { padding: 15px; }
+            .header-title-box h1 { font-size: 1.15rem; }
+            .stats-container { width: 100%; margin-top: 5px; }
+            .stat-card { flex: 1; padding: 6px; min-width: auto; }
+            .calendar-container { padding: 12px; }
+            
+            /* 모바일에서는 찌그러지는 7열 달력 숨김 및 타임라인 리스트표시 */
+            .calendar-grid { display: none !important; }
+            .mobile-schedule-list { display: flex !important; }
+        }
 
         @media (min-width: 769px) {
             .round-container { grid-template-columns: 1fr 1fr; display: grid; }
@@ -202,6 +221,8 @@
                 <h2 id="calendarTitle">2026년 8월</h2>
                 <button class="btn btn-secondary" style="padding:6px 12px; width:auto;" onclick="changeMonth(1)">다음달 ▶</button>
             </div>
+
+            <!-- PC 7열 달력 그리드 -->
             <div class="calendar-grid">
                 <div class="calendar-day-header sun">일</div>
                 <div class="calendar-day-header">월</div>
@@ -212,6 +233,9 @@
                 <div class="calendar-day-header sat">토</div>
             </div>
             <div class="calendar-grid" id="calendarDays"></div>
+
+            <!-- 📱 모바일 가독성 타임라인 리스트 -->
+            <div class="mobile-schedule-list" id="mobileScheduleList"></div>
         </div>
     </div>
 
@@ -220,7 +244,7 @@
     </div>
 </div>
 
-<!-- Modal Popup (3번 모달 창 통합) -->
+<!-- Modal Popup -->
 <div class="modal-overlay" id="infoModal">
     <div class="modal-card">
         <span class="modal-close" onclick="closeModal('infoModal')">&times;</span>
@@ -424,7 +448,6 @@
                         <input type="text" id="field-docMemo-${index}" placeholder="예: 사진, 로고 완료 / 기존 홍보물 대기중..." value="${docMemo}">
                     </div>
 
-                    <!-- 💡 1번 노란색 기업 특성 박스 복원 -->
                     <div class="traits-input-box">
                         <label>💡 기업 특성 및 사전 참고사항 (성향/주력제품/유의사항)</label>
                         <input type="text" id="field-traits-${index}" placeholder="예: 대표님 소통 스타일, 주력 디저트 라인업, 브랜드 리뉴얼 니즈 강함 등..." value="${traits}" style="width:100%; font-size:0.85rem; padding:8px; border:1px solid #fcd34d; border-radius:6px; background:#ffffff;">
@@ -533,19 +556,18 @@
         btn.classList.add('active');
     }
 
-    /* 3번 모달 팝업 복원 */
     function openModal(comp, currentRound) {
         const modal = document.getElementById('infoModal');
 
         const status = currentRound === 1 ? comp.r1Status : comp.r2Status;
         const mgr1 = currentRound === 1 ? comp.r1Manager1 : comp.r2Manager1;
         const mgr2 = currentRound === 1 ? comp.r1Manager2 : comp.r2Manager2;
-        const managersText = [mgr1, mgr2].filter(Boolean).join(', ') || '내용, 내용';
+        const managersText = [mgr1, mgr2].filter(Boolean).join(', ') || '담당자 미정';
 
         const content = currentRound === 1 ? comp.r1Content : comp.r2Content;
         const dateTime = currentRound === 1 ? comp.r1Date : comp.r2Date;
 
-        const encodedAddr = encodeURIComponent(comp.address);
+        const encodedAddr = encodeURIComponent(comp.address || '');
         const naverMapUrl = `https://m.map.naver.com/search2/search.naver?query=${encodedAddr}`;
         const statusBg = getStatusColor(status);
 
@@ -560,7 +582,7 @@
 
             <div class="modal-topic-card">
                 <div class="modal-topic-title">📌 이번 회차 컨설팅 수행 주제 & 과제</div>
-                <div class="modal-topic-body">${content || '내용'}</div>
+                <div class="modal-topic-body">${content || '등록된 수행 내용이 없습니다.'}</div>
                 <div style="font-size:0.82rem; color:#64748b; margin-top:8px;">
                     ⏰ <strong>일시:</strong> ${dateTime ? dateTime.replace('T', ' ') : '일정 미정'} | 👥 <strong>담당:</strong> ${managersText}
                 </div>
@@ -577,7 +599,7 @@
                 <div class="history-timeline">
                     <div class="history-step-item ${currentRound === 1 ? 'active' : ''}">
                         <strong>[1회차]</strong> ${comp.r1Date ? comp.r1Date.split('T')[0] : '미정'} (${comp.r1Status})<br>
-                        <span style="color:#475569;">${comp.r1Content || '내용'}</span>
+                        <span style="color:#475569;">${comp.r1Content || '내용 없음'}</span>
                     </div>
                     <div class="history-step-item ${currentRound === 2 ? 'active' : ''}">
                         <strong>[2회차]</strong> ${comp.r2Date ? comp.r2Date.split('T')[0] : '미정'} (${comp.r2Status})<br>
@@ -592,7 +614,7 @@
                     <a href="tel:${comp.phone}" class="contact-phone-btn">📞 ${comp.phone} 전화걸기</a>
                 </div>
                 <div style="font-size:0.88rem; color:#334155; margin-top:6px; display:flex; align-items:center; justify-content:space-between;">
-                    <span><strong>주소:</strong> ${comp.address}</span>
+                    <span><strong>주소:</strong> ${comp.address || '정보 없음'}</span>
                     <a href="${naverMapUrl}" target="_blank" class="map-link-inline">📍 길찾기</a>
                 </div>
             </div>
@@ -615,12 +637,17 @@
         const lastDate = new Date(year, month + 1, 0).getDate();
 
         const pcGrid = document.getElementById('calendarDays');
-        if(!pcGrid) return;
+        const mobileList = document.getElementById('mobileScheduleList');
+        
+        if(!pcGrid || !mobileList) return;
         pcGrid.innerHTML = '';
+        mobileList.innerHTML = '';
 
         for (let i = 0; i < firstDay; i++) {
             pcGrid.appendChild(document.createElement('div'));
         }
+
+        let hasMobileEvents = false;
 
         for (let date = 1; date <= lastDate; date++) {
             const dayDiv = document.createElement('div');
@@ -654,6 +681,7 @@
                 }
             });
 
+            // PC 그리드 구성
             dayEvents.forEach(ev => {
                 const time = ev.date.split('T')[1] || '';
                 const comp = ev.comp;
@@ -671,7 +699,51 @@
             });
 
             pcGrid.appendChild(dayDiv);
+
+            // 📱 모바일 전용 카드 구성 (일정이 있는 날만 표출)
+            if (dayEvents.length > 0) {
+                hasMobileEvents = true;
+                const mGroup = document.createElement('div');
+                mGroup.className = 'mobile-date-group';
+                
+                let eventsHtml = '';
+                dayEvents.forEach(ev => {
+                    const time = ev.date.split('T')[1] || '';
+                    const comp = ev.comp;
+                    const status = ev.type === 1 ? comp.r1Status : comp.r2Status;
+                    const content = ev.type === 1 ? comp.r1Content : comp.r2Content;
+
+                    eventsHtml += `
+                        <div class="event-card status-${status}" onclick="openModalById(${comp.id}, ${ev.type})" style="padding:12px; margin-top:8px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span class="time" style="font-size:0.9rem;">⏰ ${time}</span>
+                                <span style="background:${getStatusColor(status)}; color:white; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:0.75rem;">${status}</span>
+                            </div>
+                            <div style="font-size:1.0rem; font-weight:bold; margin-top:4px; color:var(--primary-color);">${comp.name} (${ev.type}회차)</div>
+                            <div style="font-size:0.85rem; color:#475569; margin-top:4px;">📌 ${content || '주제 미정'}</div>
+                        </div>
+                    `;
+                });
+
+                mGroup.innerHTML = `
+                    <div class="mobile-date-header">
+                        <span>📅 ${month + 1}월 ${date}일 (${['일','월','화','수','목','금','토'][dayOfWeek]})</span>
+                        <span style="font-size:0.78rem; color:var(--holiday-color);">${koreanHolidays[dateStr] || ''}</span>
+                    </div>
+                    ${eventsHtml}
+                `;
+                mobileList.appendChild(mGroup);
+            }
         }
+
+        if (!hasMobileEvents) {
+            mobileList.innerHTML = `<div style="padding:30px; text-align:center; color:#94a3b8; font-size:0.9rem; background:white; border-radius:10px; border:1px solid #cbd5e1;">이번 달에는 등록된 컨설팅 일정이 없습니다.</div>`;
+        }
+    }
+
+    function openModalById(id, round) {
+        const comp = companies.find(c => c.id === id);
+        if (comp) openModal(comp, round);
     }
 
     function changeMonth(delta) {
