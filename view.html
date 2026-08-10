@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>순천시 청년 소상공인 초기성장 프로젝트 - 컨설팅 확정 일정 현황</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #0f2c59;
+            --secondary-color: #0056b3;
+            --accent-color: #00b4d8;
+            --holiday-color: #d90429;
+            --saturday-color: #0056b3;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --text-color: #1e293b;
+            
+            --status-planned: #0284c7;
+            --status-progress: #d97706;
+            --status-done: #16a34a;
+            --status-hold: #64748b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.5; padding: 15px; }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        header { background: var(--primary-color); color: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .header-title-box h1 { font-size: 1.35rem; font-weight: 800; }
+        .header-title-box p { font-size: 0.85rem; opacity: 0.85; margin-top: 3px; }
+
+        .stats-container { display: flex; gap: 8px; }
+        .stat-card { background: rgba(255, 255, 255, 0.15); padding: 8px 14px; border-radius: 8px; text-align: center; min-width: 90px; }
+        .stat-card .num { font-size: 1.1rem; font-weight: bold; color: var(--accent-color); }
+        .stat-card .label { font-size: 0.72rem; opacity: 0.9; }
+
+        .calendar-container { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .calendar-header h2 { font-size: 1.25rem; color: var(--primary-color); font-weight: 800; }
+        
+        .btn-nav { padding: 6px 14px; background: #475569; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+        .btn-print { padding: 8px 16px; background: #0f172a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; margin-bottom: 15px; float: right; }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .calendar-day-header { text-align: center; font-weight: bold; padding: 10px 4px; background: #f1f5f9; border-radius: 6px; color: var(--primary-color); font-size: 0.85rem; }
+        .calendar-day-header.sun { color: var(--holiday-color); }
+        .calendar-day-header.sat { color: var(--saturday-color); }
+
+        .calendar-day { height: 140px; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px; background: #ffffff; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+        .calendar-day .date-num { font-weight: bold; font-size: 0.85rem; margin-bottom: 2px; position: sticky; top: 0; background: white; z-index: 1; border-bottom: 1px solid #f1f5f9; padding-bottom: 2px; }
+        .calendar-day.sun .date-num { color: var(--holiday-color); }
+        .calendar-day.sat .date-num { color: var(--saturday-color); }
+
+        .event-card { background: #ffffff; padding: 5px 7px; border-radius: 4px; font-size: 0.72rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); border: 1px solid #cbd5e1; border-left-width: 4px; flex-shrink: 0; }
+        .event-card.status-예정 { border-left-color: var(--status-planned); background: #f0f9ff; }
+        .event-card.status-진행 { border-left-color: var(--status-progress); background: #fffdf5; }
+        .event-card.status-완료 { border-left-color: var(--status-done); background: #f0fdf4; }
+        
+        .event-card .time { font-weight: 800; color: var(--primary-color); }
+        .event-card .company { font-weight: 700; color: #0f172a; }
+        .event-card .topic { font-size: 0.68rem; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        @media print {
+            body { padding: 0; background: white; }
+            .btn-print, .btn-nav { display: none !important; }
+            .calendar-container { border: none; box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="header-title-box">
+            <h1>순천시 청년 소상공인 초기성장 프로젝트</h1>
+            <p>1:1 전문가 맞춤형 컨설팅 일정 현황 보고</p>
+        </div>
+        <div class="stats-container">
+            <div class="stat-card"><div class="num" id="stat-total">10</div><div class="label">전체 점포</div></div>
+            <div class="stat-card"><div class="num" id="stat-r1-done">0</div><div class="label">1회차 완료</div></div>
+            <div class="stat-card"><div class="num" id="stat-r2-done">0</div><div class="label">2회차 완료</div></div>
+        </div>
+    </header>
+
+    <button class="btn-print" onclick="window.print()">🜂 달력 출력 (A4)</button>
+    <div style="clear:both;"></div>
+
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <button class="btn-nav" onclick="changeMonth(-1)">◀ 이전달</button>
+            <h2 id="calendarTitle">2026년 8월</h2>
+            <button class="btn-nav" onclick="changeMonth(1)">다음달 ▶</button>
+        </div>
+        <div class="calendar-grid">
+            <div class="calendar-day-header sun">일</div>
+            <div class="calendar-day-header">월</div>
+            <div class="calendar-day-header">화</div>
+            <div class="calendar-day-header">수</div>
+            <div class="calendar-day-header">목</div>
+            <div class="calendar-day-header">금</div>
+            <div class="calendar-day-header sat">토</div>
+        </div>
+        <div class="calendar-grid" id="calendarDays"></div>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCcNNXDqZJBQVaysHYYyh0J7s5hn2P3DHI",
+        authDomain: "connect-project-badac.firebaseapp.com",
+        projectId: "connect-project-badac",
+        storageBucket: "connect-project-badac.firebasestorage.app",
+        messagingSenderId: "2013356456",
+        appId: "1:2013356456:web:b08f2938df8d271edd3d9d",
+        measurementId: "G-J0FMB441TR"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const koreanHolidays = {
+        "2026-01-01": "신정", "2026-02-16": "설날연휴", "2026-02-17": "설날", "2026-02-18": "설날연휴",
+        "2026-03-01": "삼일절", "2026-03-02": "대체공휴일", "2026-05-05": "어린이날", "2026-05-24": "부처님오신날",
+        "2026-05-25": "대체공휴일", "2026-06-06": "현충일", "2026-08-15": "광복절", "2026-08-17": "대체공휴일"
+    };
+
+    const initialCompanies = [
+        { id: 1, name: "만대재", r1Date: "", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
+        { id: 2, name: "스테잇", r1Date: "2026-08-13T10:00", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
+        { id: 3, name: "동동베이킹랩", r1Date: "2026-08-17T14:00", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
+        { id: 4, name: "촌스랩", r1Date: "", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
+        { id: 5, name: "고소롱", r1Date: "", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
+        { id: 6, name: "노무사사무소 미르", r1Date: "2026-08-07T10:30", r1Content: "마케팅 과제 확정 (블로그/배너/자동문자)", r1Status: "완료", r2Date: "", r2Status: "예정" },
+        { id: 7, name: "멜리본", r1Date: "", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
+        { id: 8, name: "세허니", r1Date: "2026-08-13T10:00", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
+        { id: 9, name: "곡물공간", r1Date: "", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" },
+        { id: 10, name: "뉘즈", r1Date: "2026-08-10T16:00", r1Content: "", r1Status: "예정", r2Date: "", r2Status: "예정" }
+    ];
+
+    let companies = initialCompanies;
+    let currentDate = new Date(2026, 7, 1);
+
+    db.collection("consulting_data").onSnapshot((snapshot) => {
+        snapshot.forEach((docSnap) => {
+            const remoteData = docSnap.data();
+            const idx = companies.findIndex(c => c.id == remoteData.id);
+            if (idx !== -1) {
+                companies[idx] = { ...companies[idx], ...remoteData };
+            }
+        });
+        updateStats();
+        renderCalendar();
+    });
+
+    function updateStats() {
+        document.getElementById('stat-total').innerText = companies.length;
+        document.getElementById('stat-r1-done').innerText = companies.filter(c => c.r1Status === "완료").length;
+        document.getElementById('stat-r2-done').innerText = companies.filter(c => c.r2Status === "완료").length;
+    }
+
+    function renderCalendar() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+
+        document.getElementById('calendarTitle').innerText = `${year}년 ${month + 1}월`;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+
+        const pcGrid = document.getElementById('calendarDays');
+        if(!pcGrid) return;
+        pcGrid.innerHTML = '';
+
+        for (let i = 0; i < firstDay; i++) {
+            pcGrid.appendChild(document.createElement('div'));
+        }
+
+        for (let date = 1; date <= lastDate; date++) {
+            const dayDiv = document.createElement('div');
+            const dayOfWeek = new Date(year, month, date).getDay();
+            
+            const monthStr = String(month + 1).padStart(2, '0');
+            const dateStrNum = String(date).padStart(2, '0');
+            const dateStr = `${year}-${monthStr}-${dateStrNum}`;
+
+            let dayClass = "calendar-day";
+            let holidayName = "";
+
+            if (dayOfWeek === 0) dayClass += " sun";
+            if (dayOfWeek === 6) dayClass += " sat";
+            if (koreanHolidays[dateStr]) {
+                dayClass += " holiday";
+                holidayName = `<span style="font-size:0.65rem;">(${koreanHolidays[dateStr]})</span>`;
+            }
+
+            dayDiv.className = dayClass;
+            dayDiv.innerHTML = `<div class="date-num"><span>${date}</span><span>${holidayName}</span></div>`;
+
+            let dayEvents = [];
+
+            companies.forEach(comp => {
+                if (comp.r1Date && comp.r1Date.startsWith(dateStr)) {
+                    dayEvents.push({ type: 1, comp: comp, date: comp.r1Date });
+                }
+                if (comp.r2Date && comp.r2Date.startsWith(dateStr)) {
+                    dayEvents.push({ type: 2, comp: comp, date: comp.r2Date });
+                }
+            });
+
+            dayEvents.forEach(ev => {
+                const time = ev.date.split('T')[1] || '';
+                const comp = ev.comp;
+                const status = ev.type === 1 ? comp.r1Status : comp.r2Status;
+                const content = ev.type === 1 ? comp.r1Content : comp.r2Content;
+
+                const card = document.createElement('div');
+                card.className = `event-card status-${status}`;
+                card.innerHTML = `
+                    <div><span class="time">${time}</span> <span class="company">${comp.name}</span> (${ev.type}회)</div>
+                    <div class="topic">📌 ${content || '주제 미정'}</div>
+                `;
+                dayDiv.appendChild(card);
+            });
+
+            pcGrid.appendChild(dayDiv);
+        }
+    }
+
+    function changeMonth(delta) {
+        currentDate.setMonth(currentDate.getMonth() + delta);
+        renderCalendar();
+    }
+
+    window.onload = function() {
+        updateStats();
+        renderCalendar();
+    };
+</script>
+</body>
+</html>
