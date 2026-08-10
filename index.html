@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>순천시 청년 소상공인 초기성장 프로젝트 - 사무국 대시보드</title>
+    
+    <!-- Firebase SDK (CDN 방식 - 브라우저 실시간 연동 지원) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <style>
         :root {
             --primary-color: #0f2c59;
@@ -37,6 +42,9 @@
         .stat-card .num { font-size: 1.05rem; font-weight: bold; color: var(--accent-color); }
         .stat-card .label { font-size: 0.68rem; opacity: 0.9; white-space: nowrap; }
 
+        .admin-bar { display: none; background: #fef2f2; border: 1px solid #fca5a5; padding: 10px 14px; border-radius: 8px; margin-bottom: 15px; justify-content: space-between; align-items: center; color: #991b1b; font-size: 0.82rem; font-weight: bold; flex-wrap: wrap; gap: 8px; }
+        .admin-bar button { padding: 6px 12px; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.78rem; font-weight: bold; }
+
         .controls { background: var(--card-bg); padding: 12px 15px; border-radius: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border: 1px solid var(--border-color); }
         .search-filter { display: flex; gap: 8px; flex: 1; flex-wrap: wrap; }
         input[type="text"], select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.88rem; outline: none; }
@@ -59,6 +67,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
+        /* Calendar */
         .calendar-container { background: var(--card-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .calendar-header h2 { font-size: 1.15rem; color: var(--primary-color); }
@@ -79,6 +88,7 @@
         
         .event-card .time { font-weight: 800; color: var(--primary-color); }
         .event-card .company { font-weight: 700; color: #0f172a; }
+        .event-card .topic { font-size: 0.65rem; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .company-cards-list { display: flex; flex-direction: column; gap: 12px; }
         .accordion-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; }
@@ -104,6 +114,10 @@
         .form-group { display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px; }
         .form-group label { font-size: 0.75rem; font-weight: 700; color: #475569; }
         .form-group input, .form-group select, .form-group textarea { font-size: 0.85rem; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; width: 100%; }
+
+        .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+        .modal-card { background: white; width: 100%; max-width: 520px; border-radius: 16px; padding: 22px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-close { position: absolute; top: 18px; right: 20px; font-size: 1.4rem; cursor: pointer; color: #94a3b8; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -139,7 +153,7 @@
         </div>
         <div class="btn-action-group">
             <button class="btn btn-print" onclick="window.print()">🜂 현황 보고서 인쇄 (A4)</button>
-            <button class="btn btn-success" onclick="saveAllData()">💾 전체 저장하기</button>
+            <button class="btn btn-success" onclick="saveAllData()">💾 전체 클라우드 동기화 저장</button>
         </div>
     </div>
 
@@ -173,10 +187,8 @@
     </div>
 </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
+<script>
+    // 1. Firebase 접속 환경 세팅
     const firebaseConfig = {
         apiKey: "AIzaSyCcNNXDqZJBQVaysHYYyh0J7s5hn2P3DHI",
         authDomain: "connect-project-badac.firebaseapp.com",
@@ -187,26 +199,36 @@
         measurementId: "G-J0FMB441TR"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
+    const koreanHolidays = {
+        "2026-01-01": "신정", "2026-02-16": "설날연휴", "2026-02-17": "설날", "2026-02-18": "설날연휴",
+        "2026-03-01": "삼일절", "2026-03-02": "대체공휴일", "2026-05-05": "어린이날", "2026-05-24": "부처님오신날",
+        "2026-05-25": "대체공휴일", "2026-06-06": "현충일", "2026-08-15": "광복절", "2026-08-17": "대체공휴일",
+        "2026-09-24": "추석연휴", "2026-09-25": "추석", "2026-09-26": "추석연휴", "2026-10-03": "개천절",
+        "2026-10-09": "한글날", "2026-12-25": "성탄절"
+    };
+
+    // 기존 등록 일정이 복구된 기본 데이터 세트
     const initialCompanies = [
         { id: 1, name: "만대재", owner: "장민영", phone: "010-4924-1573", address: "전남 순천시 순천만길 530, 1층", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
-        { id: 2, name: "스테잇", owner: "백민경", phone: "010-9243-6558", address: "전남 순천시 왕지3길 18-28", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
-        { id: 3, name: "동동베이킹랩", owner: "최동문", phone: "010-3104-0215", address: "전남 순천시 장명로 13, 다동 1층", category: "복합", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 2, name: "스테잇", owner: "백민경", phone: "010-9243-6558", address: "전남 순천시 왕지3길 18-28", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "2026-08-13T10:00", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 3, name: "동동베이킹랩", owner: "최동문", phone: "010-3104-0215", address: "전남 순천시 장명로 13, 다동 1층", category: "복합", docStatus: "미수집", docMemo: "", traits: "", r1Date: "2026-08-17T14:00", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
         { id: 4, name: "촌스랩", owner: "오태민", phone: "010-5842-0277", address: "전남 순천시 중앙로 255, F1동 4층", category: "지원사업", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
         { id: 5, name: "고소롱", owner: "장진수", phone: "010-2716-5614", address: "전남 순천시 연향1로 40, 상가동 108호", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
-        { id: 6, name: "노무사사무소 미르", owner: "조수린", phone: "010-2753-1858", address: "전남 순천시 해룡면 지봉로 277, 1층", category: "지원사업", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 6, name: "노무사사무소 미르", owner: "조수린", phone: "010-2753-1858", address: "전남 순천시 해룡면 지봉로 277, 1층", category: "지원사업", docStatus: "미수집", docMemo: "", traits: "대표자 나이 대비 10년 경력을 가지고 있으며, 젊은층인 만큼 자신의 분야의 다양한 확장성을 생각하고있음", r1Date: "2026-08-07T10:30", r1Manager1: "심훈 팀장", r1Manager2: "윤엘림 사원", r1Content: "마케팅 과제 확정 1. 브랜드 블로그 스킨 리뉴얼 및 썸네일(4종) 2. 제미나이 블로그 가이드 3. 순광맘 배너·웹포스터 4. 자동문자 프로그램", r1Status: "완료", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
         { id: 7, name: "멜리본", owner: "서성호", phone: "010-4446-0064", address: "전남 순천시 팔마3길 38", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
-        { id: 8, name: "세허니", owner: "권현정", phone: "010-8502-5508", address: "전남 순천시 덕월길 112", category: "복합", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
+        { id: 8, name: "세허니", owner: "권현정", phone: "010-8502-5508", address: "전남 순천시 덕월길 112", category: "복합", docStatus: "미수집", docMemo: "", traits: "", r1Date: "2026-08-13T10:00", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
         { id: 9, name: "곡물공간", owner: "정세헌", phone: "010-7733-9220", address: "전남 순천시 저전길 18, 2층", category: "디자인", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" },
-        { id: 10, name: "뉘즈", owner: "김수은", phone: "010-9208-3713", address: "전남 순천시 역전길 34, 2층 19호", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" }
+        { id: 10, name: "뉘즈", owner: "김수은", phone: "010-9208-3713", address: "전남 순천시 역전길 34, 2층 19호", category: "마케팅", docStatus: "미수집", docMemo: "", traits: "", r1Date: "2026-08-10T16:00", r1Manager1: "", r1Manager2: "", r1Content: "", r1Status: "예정", r2Date: "", r2Manager1: "", r2Manager2: "", r2Content: "", r2Status: "예정", reqR1Date: "", reqR2Date: "", lastModified: "" }
     ];
 
     let companies = initialCompanies;
     let currentDate = new Date(2026, 7, 1);
 
-    onSnapshot(collection(db, "consulting_data"), (snapshot) => {
+    // 🔥 클라우드 DB 실시간 수신 설정
+    db.collection("consulting_data").onSnapshot((snapshot) => {
         snapshot.forEach((docSnap) => {
             const remoteData = docSnap.data();
             const idx = companies.findIndex(c => c.id == remoteData.id);
@@ -219,7 +241,7 @@
         renderCalendar();
     });
 
-    window.saveItemData = async function(index) {
+    function saveItemData(index) {
         const modTime = new Date().toLocaleString('ko-KR');
         companies[index].lastModified = modTime;
 
@@ -238,16 +260,13 @@
         companies[index].r2Manager2 = document.getElementById(`field-r2Manager2-${index}`).value;
         companies[index].r2Content = document.getElementById(`field-r2Content-${index}`).value;
 
-        try {
-            await setDoc(doc(db, "consulting_data", String(companies[index].id)), companies[index], { merge: true });
-            alert(`[${companies[index].name}] 정보가 클라우드 DB에 연동 저장되었습니다.`);
-        } catch(e) {
-            alert("저장 오류: " + e.message);
-        }
-    };
+        db.collection("consulting_data").doc(String(companies[index].id)).set(companies[index], { merge: true })
+            .then(() => alert(`[${companies[index].name}] 확정 정보가 실시간 클라우드 DB에 동기화 저장되었습니다.`))
+            .catch(e => alert("저장 오류: " + e.message));
+    }
 
-    window.saveAllData = async function() {
-        for (let index = 0; index < companies.length; index++) {
+    function saveAllData() {
+        companies.forEach((item, index) => {
             const docS = document.getElementById(`field-docStatus-${index}`);
             if(docS) {
                 companies[index].docStatus = docS.value;
@@ -263,14 +282,15 @@
                 companies[index].r2Manager2 = document.getElementById(`field-r2Manager2-${index}`).value;
                 companies[index].r2Content = document.getElementById(`field-r2Content-${index}`).value;
                 
-                await setDoc(doc(db, "consulting_data", String(companies[index].id)), companies[index], { merge: true });
+                db.collection("consulting_data").doc(String(companies[index].id)).set(companies[index], { merge: true });
             }
-        }
-        alert("전체 데이터 클라우드 동기화 저장이 완료되었습니다.");
-    };
+        });
+        alert("전체 데이터가 실시간 클라우드 DB에 통합 저장되었습니다.");
+    }
 
-    window.renderCards = function() {
+    function renderCards() {
         const container = document.getElementById('companyCardsContainer');
+        if(!container) return;
         container.innerHTML = '';
 
         companies.forEach((item, index) => {
@@ -388,9 +408,9 @@
             `;
             container.appendChild(card);
         });
-    };
+    }
 
-    window.toggleCardDetail = function(index) {
+    function toggleCardDetail(index) {
         const detail = document.getElementById(`cardDetail-${index}`);
         const btn = document.getElementById(`toggleBtn-${index}`);
         if (detail.classList.contains('open')) {
@@ -400,7 +420,7 @@
             detail.classList.add('open');
             btn.innerText = '접기 ∧';
         }
-    };
+    }
 
     function getDocStatusColor(status) {
         if (status === '완료') return '#16a34a';
@@ -415,22 +435,23 @@
         return '#64748b';
     }
 
-    window.updateStats = function() {
+    function updateStats() {
         document.getElementById('stat-total').innerText = companies.length;
         const collectedCount = companies.filter(c => c.docStatus === '완료').length;
         document.getElementById('stat-collected').innerText = `${collectedCount}/${companies.length}`;
         document.getElementById('stat-r1-done').innerText = companies.filter(c => c.r1Status === "완료").length;
         document.getElementById('stat-r2-done').innerText = companies.filter(c => c.r2Status === "완료").length;
-    };
+    }
 
-    window.switchTab = function(tabId, btn) {
+    function switchTab(tabId, btn) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
         btn.classList.add('active');
-    };
+    }
 
-    window.renderCalendar = function() {
+    // 📅 달력 그리드 렌더링
+    function renderCalendar() {
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
 
@@ -440,6 +461,7 @@
         const lastDate = new Date(year, month + 1, 0).getDate();
 
         const pcGrid = document.getElementById('calendarDays');
+        if(!pcGrid) return;
         pcGrid.innerHTML = '';
 
         for (let i = 0; i < firstDay; i++) {
@@ -495,12 +517,27 @@
 
             pcGrid.appendChild(dayDiv);
         }
-    };
+    }
 
-    window.changeMonth = function(delta) {
+    function changeMonth(delta) {
         currentDate.setMonth(currentDate.getMonth() + delta);
         renderCalendar();
-    };
+    }
+
+    function filterData() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const category = document.getElementById('categoryFilter').value;
+
+        const cards = document.querySelectorAll('.accordion-card');
+        companies.forEach((item, index) => {
+            const matchesSearch = item.name.toLowerCase().includes(search) || item.owner.toLowerCase().includes(search);
+            const matchesCategory = category === "" || item.category === category;
+
+            if (cards[index]) {
+                cards[index].style.display = (matchesSearch && matchesCategory) ? "" : "none";
+            }
+        });
+    }
 
     window.onload = function() {
         renderCards();
